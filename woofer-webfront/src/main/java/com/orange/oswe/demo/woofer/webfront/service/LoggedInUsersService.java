@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 /**
  * A service that keeps track of anonymous and authenticated sessions
  */
-@Service
+@Service("usersService")
 public class LoggedInUsersService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggedInUsersService.class);
@@ -41,8 +41,8 @@ public class LoggedInUsersService {
     private final Multimap<String, String> user2SessionIds = TreeMultimap.create();
 
     private String getUserName(Authentication authentication, String dflt) {
-        if(authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof User) {
-            return ((User)authentication.getPrincipal()).getUsername();
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof User) {
+            return ((User) authentication.getPrincipal()).getUsername();
         } else {
             // anonymous
             return dflt;
@@ -50,8 +50,8 @@ public class LoggedInUsersService {
     }
 
     private String getSessionId(Authentication authentication, String dflt) {
-        if(authentication != null && authentication.isAuthenticated() && authentication.getDetails() instanceof WebAuthenticationDetails) {
-            String sessionId = ((WebAuthenticationDetails)authentication.getDetails()).getSessionId();
+        if (authentication != null && authentication.isAuthenticated() && authentication.getDetails() instanceof WebAuthenticationDetails) {
+            String sessionId = ((WebAuthenticationDetails) authentication.getDetails()).getSessionId();
             return sessionId == null ? dflt : sessionId;
         } else {
             // anonymous
@@ -82,7 +82,7 @@ public class LoggedInUsersService {
 
     @EventListener
     void onSessionCreated(SessionCreationEvent event) {
-        HttpSession session = (HttpSession)event.getSource();
+        HttpSession session = (HttpSession) event.getSource();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = getUserName(authentication, ANONYMOUS);
         String sessionId = getSessionId(authentication, session.getId());
@@ -98,7 +98,7 @@ public class LoggedInUsersService {
 
     @EventListener
     void onSessionDestroyed(SessionDestroyedEvent event) {
-        HttpSession session = (HttpSession)event.getSource();
+        HttpSession session = (HttpSession) event.getSource();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = getUserName(authentication, ANONYMOUS);
         String sessionId = getSessionId(authentication, session.getId());
@@ -111,11 +111,11 @@ public class LoggedInUsersService {
     }
 
     public boolean isConnected(String userName) {
-        return countConnectionsFor(userName) > 0;
+        return userName != null && countConnectionsFor(userName) > 0;
     }
 
     public int countConnectionsFor(String userName) {
-        return user2SessionIds.get(userName).size();
+        return userName == null ? 0 : user2SessionIds.get(userName).size();
     }
 
     public int countAnonymousConnections() {

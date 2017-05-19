@@ -12,7 +12,7 @@
 		<!-- User summary (name, woofs count, followers, ... -->
 		<div class="row">
 			<div class="usersummary">
-				<a class="user" th:href="@{/users/{user}(user=${user.id})}" th:utext="#{user.link(${user.id}, ${user.fullname})}">user link</a>
+				<a class="user" th:classappend="${@usersService.isConnected(user.id)}? connected" th:href="@{/users/{user}(user=${user.id})}" th:utext="#{user.link(${user.id}, ${user.fullname})}">user link</a>
 				<!-- link action -->
 				<div th:switch="${T(com.orange.oswe.demo.woofer.webfront.domain.UserLinkHelper).getLinkAction(me, user).name()}">
 					<form name="form" th:case="SUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${user.id})}" method="POST">
@@ -49,7 +49,7 @@
 					</thead>
 					<tbody>
 						<tr th:each="other : ${user.followers}">
-							<td><a class="user" th:href="@{/users/{user}(user=${other.id})}"  th:utext="#{user.link(${other.id}, ${other.fullname})}">user link</a></td>
+							<td><a class="user" th:classappend="${@usersService.isConnected(other.id)}? connected" th:href="@{/users/{user}(user=${other.id})}"  th:utext="#{user.link(${other.id}, ${other.fullname})}">user link</a></td>
 							<td th:switch="${T(com.orange.oswe.demo.woofer.webfront.domain.UserLinkHelper).getLinkAction(me, other).name()}">
 							<form name="form" th:case="SUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${other.id})}" method="POST">
 								<input type="hidden" name="action" value="SUBSCRIBE" />
@@ -77,7 +77,7 @@
 					</thead>
 					<tbody>
 						<tr th:each="other : ${user.followees}">
-							<td><a class="user" th:href="@{/users/{user}(user=${other.id})}"  th:utext="#{user.link(${other.id}, ${other.fullname})}">user link</a></td>
+							<td><a class="user" th:classappend="${@usersService.isConnected(other.id)}? connected" th:href="@{/users/{user}(user=${other.id})}"  th:utext="#{user.link(${other.id}, ${other.fullname})}">user link</a></td>
 							<td th:switch="${T(com.orange.oswe.demo.woofer.webfront.domain.UserLinkHelper).getLinkAction(me, other).name()}">
 							<form name="form" th:case="SUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${other.id})}" method="POST">
 								<input type="hidden" name="action" value="SUBSCRIBE" />
@@ -144,7 +144,7 @@
 				</ul>
 			</div>
 			<div class="woof" th:each="woof : ${woofs.content}">
-				<a class="user author" th:href="@{/users/{user}(user=${user.id})}" th:utext="#{user.link(${user.id}, ${user.fullname})}">author link</a>
+				<a class="user author" th:classappend="${@usersService.isConnected(user.id)}? connected" th:href="@{/users/{user}(user=${user.id})}" th:utext="#{user.link(${user.id}, ${user.fullname})}">author link</a>
 				<span class="date" th:text="${#calendars.format(woof.datetime)}">date</span>
 				<p class="message" th:text="${woof.message}">message</p>
 			</div>

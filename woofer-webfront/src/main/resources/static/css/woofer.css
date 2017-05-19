@@ -242,6 +242,9 @@ table .user {
 	color: #999;
 	font-weight: normal;
 }
+.user.connected {
+	color: #2b6799;
+}
 /*
  * === error page styles
  */
