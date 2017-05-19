@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Pierre Smeyers">
+        <link rel="canonical" href="https://orange-opensource.github.io/Woofer/incident-analysis/">
+        <link rel="shortcut icon" href="img/favicon.png">
+        
+
+	<title>Incident Analysis - Woofer</title>
+
+        <link href="../css/bootstrap-3.0.3.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+        <link href="../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">Woofer</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="..">Home</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../spring-boot/">Spring Boot</a>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Logging <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../recommendations/">Recommendations</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../logging-code/">Code</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="./">Incident Analysis</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li >
+                    <a rel="next" href="../logging-code/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li class="disabled">
+                    <a rel="prev" >
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/Orange-OpenSource/Woofer">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#incident-analysis-with-elk">Incident Analysis with ELK</a></li>
+        
+            <li><a href="#generate-an-internal-error">Generate an internal error</a></li>
+        
+            <li><a href="#retrieve-the-complete-stack-trace">Retrieve the complete stack trace</a></li>
+        
+            <li><a href="#filter-logs-from-the-request">Filter logs from the request</a></li>
+        
+            <li><a href="#retrieve-the-access-logs">Retrieve the access log(s)</a></li>
+        
+            <li><a href="#filter-logs-by-the-session-or-by-user">Filter logs by the session or by user</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="incident-analysis-with-elk">Incident Analysis with ELK</h1>
+<p>This chapter explains how errors can be traced and analyzed from the application to Kibana.</p>
+<hr />
+<h2 id="generate-an-internal-error">Generate an internal error</h2>
+<ol>
+<li><a href="../">Login to Woofer</a>,</li>
+<li>Post a woof that contains the ''err:back'' text,</li>
+<li>You should get an error page:
+<img alt="Woofer: Error page" src="../img/1_woofer_error_page.png" /></li>
+<li>Copy the error unique ID (<code>#d7506d00-99f2c6eb90682</code> in above example).</li>
+</ol>
+<hr />
+<h2 id="retrieve-the-complete-stack-trace">Retrieve the complete stack trace</h2>
+<ol>
+<li>Go to <strong>Kibana</strong>,</li>
+<li>Open the <strong>Woofer Java logs</strong> saved search,
+<img alt="Kibana: saved searches" src="../img/2_open_woofer_java_logs.png" /></li>
+<li>Paste the error unique ID in the search input field and press <code>RETURN</code>,
+<img alt="Kibana: search error by ID" src="../img/3_search_error_by_ID.png" /></li>
+<li>You should get the originating error. Expand it, and you get the complete stack trace !
+<img alt="Kibana: stack trace" src="../img/4_expand_error_stack.png" /></li>
+</ol>
+<hr />
+<h2 id="filter-logs-from-the-request">Filter logs from the request</h2>
+<p>If the stack trace is not enough to analyze the issue and if you need to know what was processed previously during the request, you may filter logs
+by <code>X-B3-TraceId</code> (unique <em>treatment</em> ID generated by <a href="https://cloud.spring.io/spring-cloud-sleuth/">Spring Cloud Sleuth</a>).</p>
+<ol>
+<li>click the <code>+</code> magnifier icon on the <code>X-B3-TraceId</code> field: that will add the <code>X-B3-TraceId: "xxxxxxxx"</code> to the current query,
+<img alt="Kibana: filter by trace ID" src="../img/5_filter_by_trace_ID.png" /></li>
+<li>clear the Kibana search input field and press <code>RETURN</code>,</li>
+<li>You should now see ALL Java logs holding this trace ID (i.e. all logs produced during the processing of this treatment).
+By the way, notice in the <strong>@app</strong> column that traces originate both from <code>woofer-webfront</code> and <code>woofer-backend</code> components, <em>for the same trace</em>...
+<img alt="Kibana: Java logs by trace ID" src="../img/6_view_logs_by_trace_ID.png" /></li>
+</ol>
+<hr />
+<h2 id="retrieve-the-access-logs">Retrieve the access log(s)</h2>
+<p>Let's notice that - thanks to our logging configuration - the <code>X-B3-TraceId</code> is also logged in access logs: you can also find the 
+access logs with complete details if required.</p>
+<p>Here is how to retrieve it from previous step:</p>
+<ol>
+<li>pin the <code>X-B3-TraceId: "xxxxxxxx"</code> filter,</li>
+<li>Open the <strong>Woofer access logs</strong> saved search,</li>
+<li>You should now see all access logs from every component with this trace ID:
+<img alt="Kibana: the access log details" src="../img/7_view_access_logs_by_trace_ID.png" /></li>
+</ol>
+<p>NOTE: Actually we get only the access log from <code>woofer-backend</code> because - for technical reasons - we could not have the <code>woofer-webfront</code> embedded 
+Tomcat catch the original <code>X-B3-TraceId</code>. Only subsequent Tomcats do...</p>
+<hr />
+<h2 id="filter-logs-by-the-session-or-by-user">Filter logs by the session or by user</h2>
+<p>Similarly to filtering logs by <code>X-B3-TraceId</code>, you may also filter them by <code>sessionId</code> (to analyze the complete user activity during his JEE session),
+or even by <code>userId</code> (complete user activity over time).</p></div>
+        </div>
+
+    <footer class="col-md-12">
+        <hr>
+        
+        <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+    </footer>
+
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script src="../js/base.js"></script>
+    </body>
+</html>

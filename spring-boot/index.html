@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Pierre Smeyers">
+        <link rel="canonical" href="https://orange-opensource.github.io/Woofer/spring-boot/">
+        <link rel="shortcut icon" href="img/favicon.png">
+        
+
+	<title>Spring Boot - Woofer</title>
+
+        <link href="../css/bootstrap-3.0.3.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+        <link href="../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">Woofer</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="..">Home</a>
+                </li>
+            
+            
+            
+                <li class="active">
+                    <a href="./">Spring Boot</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Logging <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../recommendations/">Recommendations</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../logging-code/">Code</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../incident-analysis/">Incident Analysis</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li >
+                    <a rel="next" href="..">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../recommendations/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/Orange-OpenSource/Woofer">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#spring-spring-boot-stuff">Spring &amp; Spring Boot stuff</a></li>
+        
+            <li><a href="#woofers-microservices">Woofer's microservices</a></li>
+        
+            <li><a href="#woofers-profiles">Woofer's profiles</a></li>
+        
+            <li><a href="#spring-data-jpa">Spring Data JPA</a></li>
+        
+            <li><a href="#spring-data-rest">Spring Data Rest</a></li>
+        
+            <li><a href="#spring-cloud-netflix">Spring Cloud Netflix</a></li>
+        
+            <li><a href="#spring-boot-actuator">Spring Boot Actuator</a></li>
+        
+            <li><a href="#spring-rest-docs">Spring REST Docs</a></li>
+        
+            <li><a href="#spring-cloud-sleuth">Spring Cloud Sleuth</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="spring-spring-boot-stuff">Spring &amp; Spring Boot stuff</h1>
+<p>Woofer was originally designed to be a showcase web app to demonstrate and enforce <strong>logging best practices</strong>.</p>
+<p>But actually it is also a quite advanced <strong>Spring Boot-based microservices project sample</strong> that could be used as a
+bootstrap to create a microservices application.</p>
+<p>This page highlights Spring &amp; Spring Boot modules used in Woofer.</p>
+<hr />
+<h2 id="woofers-microservices">Woofer's microservices</h2>
+<p>Woofer heavily relies on <a href="https://projects.spring.io/spring-boot/spring-boot.md">Spring Boot</a>, and <a href="http://projects.spring.io/spring-cloud/spring-boot.md">Spring Cloud</a> to 
+implement a microservices architecture.</p>
+<p>It involves the following components:</p>
+<ul>
+<li><code>service-registry</code>: the service registry server, basically implemented by Eureka Server.</li>
+<li><code>woofer-webfront</code>: this is the web front-end application, that the end-user will use to connect, read and post woofs.</li>
+<li><code>woofer-backend</code>: this is the backend service, a pure JSON/Rest API service, that is consumed by the <code>woofer-webfront</code> and possibly mobile apps (not part of the demo).</li>
+<li><code>woofer-notifier</code>: this is a notification service, that is asynchronously triggered when domain events occur (a user posts a woof, or subscribes/unsubscribes to a mate).
+  It is called asynchronously by <code>woofer-backend</code>.</li>
+<li>database: a basic <a href="https://mariadb.org/">MariaDB</a> instance</li>
+<li>logs centralization system: an <a href="https://www.elastic.co/products">ELK</a> instance </li>
+<li>distributed tracing system: a basic <a href="http://zipkin.io/">Zipkin</a> server.</li>
+</ul>
+<hr />
+<h2 id="woofers-profiles">Woofer's profiles</h2>
+<p>By default, when launching Woofer services locally with no profile, it will 
+use a memory database (<a href="http://hsqldb.org/">hsqldb</a>),
+output Java and Http logs to the console.</p>
+<p>But Woofer has several Spring Boot <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html">profiles</a>
+to adapt to several environments.</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Description</th>
+<th>Required environment variables</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>logstash</strong></td>
+<td>used to ship Java and Http logs to a <a href="https://www.elastic.co/products/logstash">Logstash</a> server in JSON native format</td>
+<td><code>$LOGSTASH_HOST</code>, <code>$LOGSTASH_PORT</code> and optionally <code>$MD_PROJECT</code> <em>(project ID metadata)</em></td>
+</tr>
+<tr>
+<td><strong>mysql</strong></td>
+<td>uses <a href="https://www.mysql.com/">MySQL</a> or <a href="https://mariadb.org/">MariaDB</a> as persistent database</td>
+<td><code>$MYSQL_DATASOURCE_URL</code>, <code>$MYSQL_USER</code> and <code>$MYSQL_PASSWORD</code></td>
+</tr>
+<tr>
+<td><strong>zipkin</strong></td>
+<td>activates distributed tracing with a <a href="http://zipkin.io/">Zipkin</a> server</td>
+<td><code>$ZIPKIN_URL</code> and <code>$ZIPKIN_SAMPLING</code> (a ratio)</td>
+</tr>
+<tr>
+<td><strong>openshift</strong></td>
+<td>adapts the Woofer configuration to an OpenShift v3 environment (work in progress)</td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong>jmx</strong></td>
+<td>exposes Spring Boot Actuator <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-metrics.html">metrics</a> through JMX</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="spring-data-jpa">Spring Data JPA</h2>
+<p><a href="http://projects.spring.io/spring-data-jpa/">Spring Data JPA</a> is used to implement our Object-Relational Mapping (ORM).</p>
+<p>It allows creating Data Access Objects (called <code>Respositories</code> in Spring terminology) simply by annotation and interfaces.</p>
+<hr />
+<h2 id="spring-data-rest">Spring Data Rest</h2>
+<p><a href="http://projects.spring.io/spring-data-rest/">Spring Data Rest</a> is used to build hypermedia-driven REST web services on 
+top of Spring Data repositories.</p>
+<p>Woofer also uses the <a href="http://docs.spring.io/spring-data/rest/docs/current/reference/html/#projections-excerpts.projections">Projections</a>
+feature.</p>
+<p>See:</p>
+<ul>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/domain/User.java">User.java</a></li>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/repository/UserRepository.java">UserRepository.java</a></li>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/domain/Woof.java">Woof.java</a></li>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/repository/WoofRepository.java">WoofRepository.java</a></li>
+</ul>
+<hr />
+<h2 id="spring-cloud-netflix">Spring Cloud Netflix</h2>
+<p><a href="https://cloud.spring.io/spring-cloud-netflix/">Spring Cloud Netflix</a> is a great contribution from Netflix, that embeds 
+several features to build cloud applications.</p>
+<h3 id="eureka">Eureka</h3>
+<p>Eureka server &amp; client provides a very cheap and robust way of implementing <strong>services registration and discovery</strong> in 
+a microservices architecture (<a href="https://spring.io/blog/2015/01/20/microservice-registration-and-discovery-with-spring-cloud-and-netflix-s-eureka">more info</a>).</p>
+<p>Its use is quite straightforward as it only requires adding the right dependency to your <code>pom.xml</code>, and a basic
+annotation to your Sprint Boot application (either  <code>@EnableEurekaClient</code> or <code>@EnableEurekaServer</code>).</p>
+<h3 id="feign">Feign</h3>
+<p><a href="https://github.com/OpenFeign/feign">Feign</a> allows implementing <strong>declarative REST clients</strong> (i.e. through interfaces &amp; annotations).</p>
+<p>It is used in <code>woofer-webfront</code> to implement the <code>woofer-backend</code> REST client. See:</p>
+<ul>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/clients/UsersClient.java">UsersClient.java</a></li>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/clients/WoofsClient.java">WoofsClient.java</a></li>
+</ul>
+<h3 id="ribbon">Ribbon</h3>
+<p>Ribbon provides <strong>client side load balancer</strong>.</p>
+<p>Its use is quite straightforward as it only requires adding the right dependency to your <code>pom.xml</code>.</p>
+<hr />
+<h2 id="spring-boot-actuator">Spring Boot Actuator</h2>
+<p><a href="http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready.html">Spring REST Docs</a> provides a set of tools
+to monitor and manage your application.</p>
+<p>Apart from default management endpoints, <code>woofer-webfront</code> and <code>woofer-backend</code> publish some business metrics to count active
+sessions, woofs and subscriptions.</p>
+<hr />
+<h2 id="spring-rest-docs">Spring REST Docs</h2>
+<p><a href="https://projects.spring.io/spring-restdocs/">Spring REST Docs</a> is a tool for generating part of REST API documentation.</p>
+<p>It is used in <code>woofer-backend</code> project to generate the reference API documentation.</p>
+<hr />
+<h2 id="spring-cloud-sleuth">Spring Cloud Sleuth</h2>
+<p><a href="https://cloud.spring.io/spring-cloud-sleuth/">Spring Cloud Sleuth</a> is used for distributed tracing &amp; logs correlation
+(see <a href="../logging-code">Logging - Code</a> page for more details).</p></div>
+        </div>
+
+    <footer class="col-md-12">
+        <hr>
+        
+        <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+    </footer>
+
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script src="../js/base.js"></script>
+    </body>
+</html>

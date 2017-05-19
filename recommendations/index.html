@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Pierre Smeyers">
+        <link rel="canonical" href="https://orange-opensource.github.io/Woofer/recommendations/">
+        <link rel="shortcut icon" href="img/favicon.png">
+        
+
+	<title>Recommendations - Woofer</title>
+
+        <link href="../css/bootstrap-3.0.3.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+        <link href="../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">Woofer</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="..">Home</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../spring-boot/">Spring Boot</a>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Logging <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li class="active">
+                            <a href="./">Recommendations</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../logging-code/">Code</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../incident-analysis/">Incident Analysis</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li >
+                    <a rel="next" href="../spring-boot/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../logging-code/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/Orange-OpenSource/Woofer">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#logging-in-java">Logging in Java</a></li>
+        
+            <li><a href="#which-logging-libraryies">Which logging library(ies)?</a></li>
+        
+            <li><a href="#top-recommendations">Top recommendations</a></li>
+        
+            <li><a href="#enrich-your-logs">Enrich your logs!</a></li>
+        
+            <li><a href="#how-to-ship-logs-to-logstash">How to ship logs to Logstash?</a></li>
+        
+            <li><a href="#about-the-authors">About the authors</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="logging-in-java">Logging in Java</h1>
+<p>This article has been written by Orange Software Expert members
+(see <a href="#about-the-authors">authors</a>), and is targeting Java (and JVM-based languages)
+developers, and more specifically server-side developers (JEE or else).</p>
+<p>It first gives a clear answer to "which logging library should I use", then gives
+several technical tips and tools to take the most benefit from your application logs.</p>
+<p>Our only goal is to share and spread best practices about logs.</p>
+<hr />
+<h2 id="which-logging-libraryies">Which logging library(ies)?</h2>
+<p>In Java, there are lots of logging libraries:</p>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Comment</th>
+<th>Our advise</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://docs.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html">utils.logging (aka JUL)</a></td>
+<td><em>Functionally and technically, it lags behind competitors</em></td>
+<td><span style="color: red;">do not use it</span></td>
+</tr>
+<tr>
+<td><a href="https://logging.apache.org/log4j/1.2/download.html">Log4J 1</a></td>
+<td><em>Too old, not maintained anymore</em></td>
+<td><span style="color: red;">do not use it</span></td>
+</tr>
+<tr>
+<td><a href="https://commons.apache.org/proper/commons-logging/">Apache commons-logging</a></td>
+<td><em>Too old, not maintained anymore</em></td>
+<td><span style="color: red;">do not use it</span></td>
+</tr>
+<tr>
+<td><a href="http://logging.apache.org/log4j/2.x/">Log4J 2</a></td>
+<td><em>Seems okay, but clearly not very popular</em></td>
+<td><span style="color: #F50;">no concrete feedback for now</span></td>
+</tr>
+<tr>
+<td><a href="http://www.slf4j.org/">SLF4J</a> + <a href="http://logback.qos.ch/">logback</a></td>
+<td><em>See reasons below</em></td>
+<td><span style="color: darkgreen;">this is our choice !</span></td>
+</tr>
+</tbody>
+</table>
+<h3 id="two-libraries">Two libraries?!</h3>
+<p><a href="http://www.slf4j.org/">SLF4J</a> is a <strong>logging facade</strong> API (abstract interface):
+this is the logging API you will use in your code.
+This component ensures the interoperability with all your dependencies (that might rely on other logging libraries).</p>
+<p><a href="http://logback.qos.ch/">Logback</a> is the <strong>backend implementation</strong>: this is the underlying library that implements 
+the facade and processes your logs (pushes them to stdout, flat file, with rolling policies, forward them to a 
+centralized system, work asynchronously, ...).
+It shall never be used directly from your application code. By the way <a href="http://www.slf4j.org/">SLF4J</a> is also able to 
+work with <a href="http://logging.apache.org/log4j/2.x/">Log4J 2</a> as the backend implementation (instead of 
+<a href="http://logback.qos.ch/">Logback</a>).</p>
+<p>All logback <a href="http://logback.qos.ch/manual/index.html">documentation here</a>.</p>
+<h3 id="why-this-choice">Why this choice?</h3>
+<ol>
+<li><strong>Interoperability</strong>: <a href="http://www.slf4j.org/">SLF4J</a> has bridges for most other
+  libraries (JUL, commons-logging, Log4J, ...)</li>
+<li><strong>Reliability</strong>: both projects are still actively developed, tested, documented
+  and supported, with a large user community</li>
+<li><strong>Performance</strong>: <a href="http://www.slf4j.org/">SLF4J</a> + [logbackhttp://logback.qos.ch/)
+  support a feature called « parameterized logging », that significantly boosts
+  logging performance for disabled logging statement, by not concatenating
+  logging messages (which IS costly)</li>
+<li><strong>DevOps</strong>: logback supports externalized configuration, and automatic reload
+  (changing logging levels without restarting your application)</li>
+<li>... and others; see: http://logback.qos.ch/reasonsToSwitch.html</li>
+</ol>
+<p>By the way, this choice is now the most popular choice in Java development, and
+is even the default setup when using full-stack web development frameworks such
+as <a href="http://www.dropwizard.io/">Dropwizard</a> or <a href="http://projects.spring.io/spring-boot/">Spring Boot</a>.</p>
+<p>Also notice that this choice is perfectly compatible with 
+<a href="http://12factor.net/logs">12 factor apps recommendations</a> about logs; effective
+logs routing will be implemented with logback configuration (apart from application logic).</p>
+<p>For more info about the great history of logging libraries in Java, please read:</p>
+<ul>
+<li><a href="https://www.javacodegeeks.com/2011/09/java-logging-mess.html">The Java Logging Mess</a></li>
+<li><a href="https://www.loggly.com/blog/benchmarking-java-logging-frameworks/">Benchmarking Java Logging Frameworks</a></li>
+<li><a href="http://www.java-logging.com/comparison/">Comparison of Java Logging Frameworks and Libraries</a></li>
+</ul>
+<p>Note: your application is using <a href="https://logging.apache.org/log4j/1.2/download.html">Log4J 1</a> ?</p>
+<ul>
+<li>Check out this comprehensive article that explains in details <a href="https://logback.qos.ch/manual/migrationFromLog4j.html">Migration from log4j</a>.</li>
+<li>Nevertheless, you should take the opportunity of this migration to use <a href="http://logback.qos.ch/reasonsToSwitch.html">great advantages of Logback features</a>.</li>
+</ul>
+<hr />
+<h2 id="top-recommendations">Top recommendations</h2>
+<h3 id="never-implement-your-own-logging-abstraction-layer">Never implement your own logging abstraction layer</h3>
+<p>Directly use the provided logging facade API: <a href="http://www.slf4j.org/">SLF4J</a>.</p>
+<h3 id="be-aware-of-the-parameters-evaluation-constraint">Be aware of the parameters evaluation constraint</h3>
+<p>Logging as follows:</p>
+<pre><code class="java">logger.debug(&quot;Entry number: &quot; + i + &quot; is &quot; + String.valueOf(entry[i]));
+</code></pre>
+
+<p>incurs the cost of constructing the message parameter, that is converting both
+integer <code>i</code> and <code>entry[i]</code> to a <code>String</code>, and concatenating intermediate strings.
+This is regardless of whether the message will be logged or not.</p>
+<p>SLF4J introduces a better pattern for addressing this issue:</p>
+<pre><code class="java">Object entry = new SomeObject();
+logger.debug(&quot;The entry is {}.&quot;, entry);
+</code></pre>
+
+<p>Only after evaluating whether to log or not, and only if the decision is positive,
+will the logger implementation format the message and replace the <code>{}</code> pair with
+the string value of entry.</p>
+<p>In other words, this form does not incur the cost of parameter construction when
+the log statement is disabled.</p>
+<p><strong>Caution</strong>: in some cases, even this pattern may cause parameters evaluation.</p>
+<p>Example:</p>
+<pre><code class="java">logger.debug(&quot;My JSON structure is {}.&quot;, data.toJson());
+</code></pre>
+
+<p>will always cause the <code>toJson()</code> method to be evaluated...</p>
+<p>In such a case, the recommended pattern would be to protect the logging
+instruction with level checking:</p>
+<pre><code class="java">if(logger.isDebugEnabled()) {
+  logger.debug(&quot;My JSON structure is {}.&quot;, data.toJson());
+}
+</code></pre>
+
+<p>For more info, please read the <a href="http://logback.qos.ch/manual/architecture.html#parametrized">parameterized logging</a> documentation.</p>
+<h3 id="take-care-of-the-performance-cost-of-log-caller-context">Take care of the performance cost of log caller context</h3>
+<p>Read carefully the <a href="http://logback.qos.ch/manual/layouts.html#conversionWord">Conversion Word</a> from layouts documentation,
+and avoid directives with the warning <em>"Generating the xxx information is not particularly fast. Thus, its use should be avoided unless execution speed is not an issue."</em> 
+(i.e. <a href="http://logback.qos.ch/manual/layouts.html#class">class</a>, <a href="http://logback.qos.ch/manual/layouts.html#file">file</a>, 
+<a href="http://logback.qos.ch/manual/layouts.html#line">line</a>, <a href="http://logback.qos.ch/manual/layouts.html#method">method</a>).</p>
+<p>The same recommendation applies to any other kind of logback outputs, for example
+avoid the use of <a href="https://github.com/logstash/logstash-logback-encoder#providers-for-loggingevents">"callerData" LoggingEvents provider</a> in the <code>logstash-logback-encoder</code> module.</p>
+<hr />
+<h2 id="enrich-your-logs">Enrich your logs!</h2>
+<h3 id="why">Why</h3>
+<p>Quoting splunk "<a href="http://dev.splunk.com/view/logging-best-practices/SP-CAAADP6">logging best practices</a>":</p>
+<blockquote>
+<p>Unique identifiers such as transaction IDs, user IDs, session IDs, request IDs are tremendously helpful when debugging, and even more helpful when you are gathering analytics.
+Unique IDs can point you to the exact transaction, [isolate logs from a single request or logs related to a given user]. Without them, you might only have a time range to use.
+When possible, carry these IDs through multiple touch points and avoid changing the format of these IDs between modules. That way, you can track transactions through the system and follow them across machines, networks, and services.</p>
+</blockquote>
+<p>With SLF4J, the standard way of enriching your logging context with IDs is using
+<a href="http://logback.qos.ch/manual/mdc.html">Mapped Diagnostic Context</a>.</p>
+<h3 id="tag-logs-with-unique-request-ids">Tag logs with (unique) request IDs</h3>
+<p>For instance, wouldn't it be cool to mark every log produced during the processing
+of a request with a (unique) request ID ? Then, with a tool such as Kibana, it would
+become so easy to isolate logs from a single request (ElasticSearch query 
+"requestId: 123456789")...</p>
+<p>Technically there are several options to implement this:</p>
+<ul>
+<li>With <a href="https://cloud.spring.io/spring-cloud-sleuth/">Spring Cloud Sleuth</a>,</li>
+<li><a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#requestIds">A simpler implementation</a> with our <code>orange-mathoms-logging</code> library.</li>
+</ul>
+<h3 id="tag-logs-with-user-ids">Tag logs with user IDs</h3>
+<p>Similarly, it's also very helpful to mark every log produced during the processing of an 
+authenticated request with the user ID.</p>
+<p>With Kibana you will then be able to filter out in one click all logs related to
+a single user !</p>
+<p><strong>Warning</strong>: for security/privacy reasons, it is highly recommended that the
+user ID is a technical ID and not a personal information (such as login or email address).</p>
+<p>You'll find a <a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#userIds">simple implementation</a> in our <code>orange-mathoms-logging</code> library.</p>
+<h3 id="how-to-enrich-your-stack-traces-with-signatures">How to enrich your stack traces with signatures</h3>
+<p>Warning, this idea is pretty cool...</p>
+<p>When your system will be in production, you'll have issues. And issues are (generally) ERROR logs with stack traces. But...</p>
+<ul>
+<li>How do you track the error from the client (UI and/or API) to your logs ?</li>
+<li>How will you compare stack traces ?</li>
+<li>Count their frequency ?</li>
+<li>Find quickly when a problem occurred for the first time ?</li>
+<li>Make sure a problem has been fixed for good ?</li>
+<li>...</li>
+</ul>
+<p>... the idea we propose is to generate a short, unique ID that identifies your stack trace.</p>
+<p>Thus, the same error occurring twice will have the same ID, allowing you to count, compare, track history of this issue.</p>
+<p>You could even join this signature to your client error messages for traceability.</p>
+<p>Imagine the situation...</p>
+<blockquote>
+<p><strong>The user</strong> (<em>quite upset</em>): I just had this « Internal error [#B23F6545] occurred while calling catalog » error... your app sucks !<br />
+<strong>You</strong>: no prob’, I simply type-in this « #B23F6545 » thing in my Kibana and... bing ! I get the exact stack trace, call flow, occurrences count, ... you’ll have a fix in instants !<br />
+<strong>Audience</strong>: (applause)</p>
+</blockquote>
+<p>... well, guess what ? You'll also find a <a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#stackTraceSign">simple implementation</a> in our <code>orange-mathoms-logging</code> library.</p>
+<hr />
+<h2 id="how-to-ship-logs-to-logstash">How to ship logs to Logstash?</h2>
+<p>You’re using ELK in your project ? Lucky you !</p>
+<p>With the <a href="https://github.com/logstash/logstash-logback-encoder">logstash-logback-encoder</a>
+library, you’ll be able to:</p>
+<ul>
+<li>produce logs in the native logstash JSON format (no file parsing),</li>
+<li>all your MDC fields are automatically added to the log entry,</li>
+<li>forward logs directly to a remote logstash server (over UDP or TCP), 
+  without needing any shipper (such as
+  <a href="https://www.elastic.co/products/beats/filebeat">Filebeat</a>, syslog and whatever)</li>
+<li>take benefit of a <a href="https://lmax-exchange.github.io/disruptor/">LMAX Disruptor RingBuffer</a>
+  based appender, with insane performances !!</li>
+<li>... and lots more</li>
+</ul>
+<hr />
+<h2 id="about-the-authors">About the authors</h2>
+<ul>
+<li><a href="https://github.com/dacr">David Crosson</a></li>
+<li><a href="https://github.com/davidguyomarch">David Guyomarch</a></li>
+<li><a href="https://github.com/shahnawaz-khan">Shahnawaz Khan</a></li>
+<li><a href="https://github.com/sanlaville">Remy Sanlaville</a></li>
+<li><a href="https://github.com/pismy">Pierre Smeyers</a></li>
+</ul></div>
+        </div>
+
+    <footer class="col-md-12">
+        <hr>
+        
+        <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+    </footer>
+
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script src="../js/base.js"></script>
+    </body>
+</html>

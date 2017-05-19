@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Pierre Smeyers">
+        <link rel="canonical" href="https://orange-opensource.github.io/Woofer/logging-code/">
+        <link rel="shortcut icon" href="img/favicon.png">
+        
+
+	<title>Code - Woofer</title>
+
+        <link href="../css/bootstrap-3.0.3.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+        <link href="../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">Woofer</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="..">Home</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../spring-boot/">Spring Boot</a>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Logging <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../recommendations/">Recommendations</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="./">Code</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../incident-analysis/">Incident Analysis</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li >
+                    <a rel="next" href="../recommendations/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../incident-analysis/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="https://github.com/Orange-OpenSource/Woofer">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#a-deeper-look-into-the-code">A deeper look into the code</a></li>
+        
+            <li><a href="#featured-logging-tools">Featured logging tools</a></li>
+        
+            <li><a href="#distributed-tracing-logs-correlation">Distributed tracing &amp; logs correlation</a></li>
+        
+            <li><a href="#enrich-logs-with-user-ids">Enrich logs with user IDs</a></li>
+        
+            <li><a href="#enrich-logs-with-session-ids">Enrich logs with session IDs</a></li>
+        
+            <li><a href="#enrich-stack-traces-with-unique-signatures">Enrich stack traces with unique signatures</a></li>
+        
+            <li><a href="#error-handling">Error handling</a></li>
+        
+            <li><a href="#shipping-logs-directly-to-logstash">Shipping logs directly to Logstash</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="a-deeper-look-into-the-code">A deeper look into the code</h1>
+<p>This chapter details all specific stuff coded or configured in Woofer related to logging.</p>
+<hr />
+<h2 id="featured-logging-tools">Featured logging tools</h2>
+<p>Woofer uses the following libraries:</p>
+<ul>
+<li><a href="https://www.slf4j.org/">SLF4J</a> and <a href="https://logback.qos.ch/">Logback</a> as the logging facade and implementation (the default with Spring Boot).</li>
+<li><a href="https://github.com/logstash/logstash-logback-encoder">logstash-logback-encoder</a>, a great Logback add-on that enables 
+shipping logs directly to Logstash in JSON format over TCP or UDP.</li>
+<li><a href="https://cloud.spring.io/spring-cloud-sleuth/">Spring Cloud Sleuth</a> for distributed tracing &amp; logs correlation.</li>
+<li>our <a href="https://github.com/Orange-OpenSource/orange-mathoms-logging">orange-mathoms-logging</a> library that brings additional useful stuff.</li>
+</ul>
+<hr />
+<h2 id="distributed-tracing-logs-correlation">Distributed tracing &amp; logs correlation</h2>
+<p>Especially in a microservices architecture, a request may go through several tiers (apache, j2ee server, bdd...) and it's not a trivial task to
+understand and follow the callflow and spot the root cause of an error.</p>
+<p>That's why it is so important to have a way of correlating logs produced from different tiers, but related to the same <em>treatment</em>.</p>
+<p>This is demonstrated in our <a href="../incident-analysis">Incident Analysis</a> section.</p>
+<p>Distributed tracing feature in Woofer is brought by <a href="https://cloud.spring.io/spring-cloud-sleuth/">Spring Cloud Sleuth</a>.</p>
+<p>It only requires to be installed (follow quick start), and - <em>here we go</em>:</p>
+<ol>
+<li>logs are automatically enriched with tracing context:<ul>
+<li><code>X-B3-TraceId</code>: unique ID for an overall <em>treatment</em> (across several services),</li>
+<li><code>X-B3-SpanId</code>: unique ID for a basic unit of work (one thread on one server),</li>
+<li><code>X-Span-Export</code>: whether or not the span is exported in the current span.</li>
+</ul>
+</li>
+<li>tracing context is automatically propagated upon calling other services (through standard HTTP headers).</li>
+</ol>
+<hr />
+<h2 id="enrich-logs-with-user-ids">Enrich logs with user IDs</h2>
+<p>Logs from the <code>woofer-webfront</code> component are enriched with a <code>userId</code> field, that is the user's login.</p>
+<p>This is done using the <code>PrincipalFilter</code> from the <code>orange-mathoms-logging</code> library (<a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#userIds">see doc</a>).</p>
+<hr />
+<h2 id="enrich-logs-with-session-ids">Enrich logs with session IDs</h2>
+<p>Logs from the <code>woofer-webfront</code> component are enriched with a <code>sessionId</code> field, that is the current user's session ID.</p>
+<p>This is done using the <code>SessionIdFilter</code> from the <code>orange-mathoms-logging</code> library (<a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#sessionIds">see doc</a>).</p>
+<hr />
+<h2 id="enrich-stack-traces-with-unique-signatures">Enrich stack traces with unique signatures</h2>
+<p>The idea is to generate a short, unique ID that identifies your stack trace.</p>
+<p>It is an easy way to track the error from the client (UI and/or API) to your logs, count their frequency, make sure a problem has been fixed for good...</p>
+<p>This is done using the <code>CustomThrowableConverterWithHash</code> &amp; <code>StackHashJsonProvider</code> components from the <code>orange-mathoms-logging</code> library (<a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#stackTraceSign">see doc</a>).</p>
+<hr />
+<h2 id="error-handling">Error handling</h2>
+<p>Error handling in a web application is undoubtedly a complex task. It covers several topics:</p>
+<dl>
+    <dt><strong>error mapping</strong></dt>
+    <dd>
+        How Java errors should be mapped to HTTP errors? Which status code? Which (human readable) message?
+        Generally speaking, you'll have to deal both with your own Java exceptions, and also errors from the underlying framework (Spring or else).
+    </dd>
+    <dl>
+    <dt><strong>content negotiation</strong></dt>
+    <dd>
+        When an error occurs, depending on the requesting client, you may have to render a human readable web page, 
+        a JSON response, an XML response or else.
+    </dd>
+    <dl>
+    <dt><strong>integrate to your framework</strong></dt>
+    <dd>
+        The way you will implement this logic will heavily depend on the framework you're using.
+    </dd>
+</dl>
+
+<h3 id="error-mapping">Error mapping</h3>
+<p>In Woofer, error mapping is handled by the <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java">ErrorTranslator</a> class.</p>
+<p>It is in charge of translating any internal Java error into a <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/DisplayableError.java">DisplayableError</a>, a structure with:</p>
+<ul>
+<li>an error code (compatible with <a href="https://developer.orange.com/apis/authentication-fr/api-reference#errors">common Orange Partner error codes</a>)),</li>
+<li>an HTTP status,</li>
+<li>a human friendly message.</li>
+</ul>
+<p>The <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java">ErrorTranslator</a> manages most of internal Spring exceptions: you may perfectly reuse it in your own projects.</p>
+<h3 id="the-error-handler">The error handler</h3>
+<p>In Woofer, the error handling is implemented by the <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/WooferErrorController.java">WooferErrorController</a> controller.</p>
+<p>As a <code>org.springframework.boot.autoconfigure.web.ErrorController</code> implementation, it is automatically installed by Spring as the main error handler.</p>
+<p>It manages <strong>content negotiation</strong> by defining several <code>@RequestMapping</code> handling different content types. I.e. handling an 
+error upon a web browser navigation will display a user-readable error page, while handling an error occurring in a 
+JSON/REST API will return a JSON error description.</p>
+<p>It also behaves slightly differently if the error is a client error or an internal (server) error.</p>
+<p>A client error (HTTP <code>4XX</code>) is supposed to be due to a wrong usage of the API or application. The error handler 
+simply displays some hints about the error (you may try this by navigating on this <a href="http://localhost:8080/misc/err/missingParam">link with missing parameter</a>
+of <a href="http://localhost:8080/misc/err/noSuchUri">path that does not exist</a>).</p>
+<p>Any server error (HTTP <code>5XX</code>) - on the contrary - probably need to raise an alert, get analyzed and fixed as fast as possible.</p>
+<p>They might be due - for instance - to a bloody <code>NullPointerException</code> or any technical stuff going wrong in your code.</p>
+<p>Server errors display an error message that includes a generated unique ID for traceability purpose.</p>
+<p>The message will look like this:</p>
+<pre><code>Internal error [#d7506d00-99f2c6eb90682] occurred in request 'GET /misc/err/500'
+</code></pre>
+
+<p>The stack error unique ID can be used to trace and analyze the error in Kibana.</p>
+<hr />
+<h2 id="shipping-logs-directly-to-logstash">Shipping logs directly to Logstash</h2>
+<p>Using the <strong>logstash</strong> <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html">profile</a>,
+logback is configured to ship directly application and access logs to <a href="https://www.elastic.co/products/logstash">Logstash</a> over TCP,
+using the amazing <a href="https://github.com/logstash/logstash-logback-encoder">logstash-logback-encoder</a> library.</p>
+<h3 id="configuration-for-java-logs">Configuration for Java logs</h3>
+<p>Logback configuration for Java logs also uses <code>CustomThrowableConverterWithHash</code> &amp; <code>StackHashJsonProvider</code> components
+from the <code>orange-mathoms-logging</code> library (<a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#stackTraceSign">see doc</a>)
+to enrich stack traces with unique signatures.</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!-- application logging configuration to ship logs directly to Logstash --&gt;
+&lt;configuration debug=&quot;true&quot; scan=&quot;true&quot; scanPeriod=&quot;30 seconds&quot;&gt;
+  &lt;!-- retrieve some conf from Spring --&gt;
+  &lt;springProperty name=&quot;collector_host&quot; source=&quot;custom.logging.collector.host&quot;/&gt;
+  &lt;springProperty name=&quot;collector_port&quot; source=&quot;custom.logging.collector.port&quot;/&gt;
+  &lt;springProperty name=&quot;appname&quot; source=&quot;spring.application.name&quot;/&gt;
+  &lt;springProperty name=&quot;project_key&quot; source=&quot;custom.logging.project_key&quot;/&gt;
+
+  &lt;appender name=&quot;TCP&quot; class=&quot;net.logstash.logback.appender.LogstashTcpSocketAppender&quot;&gt;
+    &lt;!-- remote Logstash server --&gt;
+    &lt;remoteHost&gt;${collector_host}&lt;/remoteHost&gt;
+    &lt;port&gt;${collector_port}&lt;/port&gt;
+    &lt;encoder class=&quot;net.logstash.logback.encoder.LogstashEncoder&quot;&gt;
+      &lt;!-- computes and adds a 'stack_hash' field on errors --&gt;
+      &lt;provider class=&quot;com.orange.experts.utils.logging.logback.StackHashJsonProvider&quot;/&gt;
+      &lt;!-- enriches the stack trace with unique hash --&gt;
+      &lt;throwableConverter class=&quot;com.orange.experts.utils.logging.logback.CustomThrowableConverterWithHash&quot; /&gt;
+      &lt;customFields&gt;{&quot;@project&quot;:&quot;${project_key}&quot;,&quot;@app&quot;:&quot;${appname}&quot;,&quot;@type&quot;:&quot;java&quot;}&lt;/customFields&gt;
+    &lt;/encoder&gt;
+  &lt;/appender&gt;
+
+  &lt;logger name=&quot;com.orange&quot; level=&quot;DEBUG&quot; /&gt;
+
+  &lt;root level=&quot;INFO&quot;&gt;
+    &lt;appender-ref ref=&quot;TCP&quot; /&gt;
+  &lt;/root&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<p>NOTE: The <a href="https://www.elastic.co/products/logstash">Logstash</a> server address is configured with non-standard Spring configuration <code>custom.logging.collector.host</code> and <code>custom.logging.collector.port</code>.</p>
+<p>With this configuration, a single Java log in Elasticsearch will look like this:</p>
+<pre><code class="json">{
+  &quot;@version&quot;: 1,
+  &quot;@timestamp&quot;: &quot;2017-03-17T14:21:25.643Z&quot;,
+  &quot;host&quot;: &quot;10.100.0.216&quot;,
+  &quot;port&quot;: 46070,
+  &quot;HOSTNAME&quot;: &quot;oswewooffront&quot;,
+  &quot;@app&quot;: &quot;woofer-webfront&quot;,
+  &quot;@type&quot;: &quot;java&quot;,
+  &quot;logger_name&quot;: &quot;com.orange.oswe.demo.woofer.commons.error.WooferErrorController&quot;,
+  &quot;level&quot;: &quot;ERROR&quot;,
+  &quot;level_value&quot;: 40000,
+  &quot;message&quot;: &quot;Internal error [#fe8ad9ce-317d85359a8531] occurred in request 'POST /woofs'&quot;,
+  &quot;thread_name&quot;: &quot;http-nio-8080-exec-6&quot;,
+  &quot;stack_trace&quot;: &quot;#fe8ad9ce&gt; com.netflix.hystrix.exception.HystrixRuntimeException: ...&quot;,
+  &quot;stack_hash&quot;: &quot;fe8ad9ce&quot;,
+  &quot;userId&quot;: &quot;bpitt&quot;,
+  &quot;sessionId&quot;: &quot;B3FD051F22C031B5A813B29D32EFF383&quot;,
+  &quot;X-B3-TraceId&quot;: &quot;8210b57467b85195&quot;,
+  &quot;X-B3-SpanId&quot;: &quot;8210b57467b85195&quot;,
+  &quot;X-Span-Export&quot;: &quot;false&quot;
+}
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@version</code></td>
+<td>standard Elasticsearch field set by Logstash</td>
+</tr>
+<tr>
+<td><code>@timestamp</code></td>
+<td>standard Elasticsearch field set by Logback</td>
+</tr>
+<tr>
+<td><code>host</code></td>
+<td>set by Logstash</td>
+</tr>
+<tr>
+<td><code>port</code></td>
+<td>set by Logstash</td>
+</tr>
+<tr>
+<td><code>HOSTNAME</code></td>
+<td>set by Logback</td>
+</tr>
+<tr>
+<td><code>@app</code></td>
+<td>custom field set by configuration (the name of the origin microservice)</td>
+</tr>
+<tr>
+<td><code>@type</code></td>
+<td>custom field set by configuration (type of the log)</td>
+</tr>
+<tr>
+<td><code>logger_name</code></td>
+<td>set by Logback</td>
+</tr>
+<tr>
+<td><code>level</code></td>
+<td>set by Logback</td>
+</tr>
+<tr>
+<td><code>level_value</code></td>
+<td>set by Logback</td>
+</tr>
+<tr>
+<td><code>message</code></td>
+<td>set by Logback</td>
+</tr>
+<tr>
+<td><code>thread_name</code></td>
+<td>set by Logback</td>
+</tr>
+<tr>
+<td><code>stack_trace</code></td>
+<td>set by Logback, content valuated by the <code>CustomThrowableConverterWithHash</code> component</td>
+</tr>
+<tr>
+<td><code>stack_hash</code></td>
+<td>custom field added by the <code>StackHashJsonProvider</code> component</td>
+</tr>
+<tr>
+<td><code>userId</code></td>
+<td>custom field added by the <code>PrincipalFilter</code> component</td>
+</tr>
+<tr>
+<td><code>sessionId</code></td>
+<td>custom field added by the <code>SessionIdFilter</code> component</td>
+</tr>
+<tr>
+<td><code>X-B3-TraceId</code></td>
+<td>set by Spring Cloud Sleuth for logs correlation</td>
+</tr>
+<tr>
+<td><code>X-B3-SpanId</code></td>
+<td>set by Spring Cloud Sleuth for logs correlation</td>
+</tr>
+<tr>
+<td><code>X-Span-Export</code></td>
+<td>set by Spring Cloud Sleuth for logs correlation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="configuration-for-access-logs-embedded-tomcat">Configuration for access logs (embedded tomcat)</h3>
+<p>Generally speaking, Logback integration to Spring Boot is quite seamless with respect to Java logs, but it is
+far from the case with embedded Tomcat access logs. Spring Boot will probably improve on this aspect in the future.</p>
+<p>In Woofer, access logs are configured by the
+<a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/tomcat/TomcatCustomizerForLogback.java">TomcatCustomizerForLogback</a>
+class by adding the <a href="http://logback.qos.ch/apidocs/ch/qos/logback/access/tomcat/LogbackValve.html">LogbackValve</a> to Tomcat's context.</p>
+<p>Here is the logback xml configuration for access log using the <strong>logstash</strong>
+<a href="http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html">profile</a>:</p>
+<pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!-- access log configuration to ship logs directly to Logstash --&gt;
+&lt;configuration debug=&quot;true&quot; scan=&quot;false&quot; scanPeriod=&quot;30 seconds&quot;&gt;
+  &lt;statusListener class=&quot;ch.qos.logback.core.status.OnConsoleStatusListener&quot; /&gt;
+
+  &lt;!-- TCP --&gt;
+  &lt;appender name=&quot;TCP&quot; class=&quot;net.logstash.logback.appender.LogstashAccessTcpSocketAppender&quot;&gt;
+    &lt;!-- remote Logstash server --&gt;
+    &lt;remoteHost&gt;${collector_host}&lt;/remoteHost&gt;
+    &lt;port&gt;${collector_port}&lt;/port&gt;
+    &lt;encoder class=&quot;net.logstash.logback.encoder.AccessEventCompositeJsonEncoder&quot;&gt;
+      &lt;providers&gt;
+        &lt;timestamp/&gt;
+        &lt;version/&gt;
+        &lt;pattern&gt;
+          &lt;pattern&gt;
+              {
+                &quot;@project&quot;:&quot;${project_key}&quot;,
+                &quot;@app&quot;:&quot;${appname}&quot;,
+                &quot;@type&quot;:&quot;http&quot;,
+                &quot;X-B3-TraceId&quot;:&quot;#nullNA{%header{X-B3-TraceId}}&quot;,
+                &quot;userId&quot;:&quot;#nullNA{%requestAttribute{track.userId}}&quot;,
+                &quot;sessionId&quot;:&quot;#nullNA{%sessionID}&quot;,
+                &quot;req&quot;: {
+                  &quot;host&quot;: &quot;%clientHost&quot;,
+                  &quot;meth&quot;: &quot;%requestMethod&quot;,
+                  &quot;url&quot;: &quot;%requestURL&quot;,
+                  &quot;uri&quot;: &quot;%requestURI&quot;,
+                  &quot;headers&quot;: {
+                    &quot;ctype&quot;: &quot;#nullNA{%header{Content-Type}}&quot;,
+                    &quot;ua&quot;: &quot;#nullNA{%header{User-Agent}}&quot;
+                  }
+                },
+                &quot;resp&quot;: {
+                  &quot;status&quot;: &quot;#asLong{%statusCode}&quot;,
+                  &quot;size&quot;: &quot;#asLong{%bytesSent}&quot;,
+                  &quot;headers&quot;: {
+                    &quot;ctype&quot;: &quot;#nullNA{%responseHeader{Content-Type}}&quot;
+                  }
+                },
+                &quot;elapsed&quot;: &quot;#asLong{%elapsedTime}&quot;
+              }
+          &lt;/pattern&gt;
+        &lt;/pattern&gt;
+      &lt;/providers&gt;
+    &lt;/encoder&gt;
+  &lt;/appender&gt;
+
+  &lt;appender-ref ref=&quot;TCP&quot; /&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<p>NOTE: You can see that this configuration allows us to control exactly the JSON structure of an access log sent to <a href="https://www.elastic.co/products/elasticsearch[Elasticsearch] via link:https://www.elastic.co/products/logstash">Logstash</a>. +
+Notice that the access logs also use the same custom fields as Java logs (<code>@app</code>, <code>@type</code>, <code>@project</code>, with <code>@type</code> equals to <code>http</code>).</p>
+<p>For more info about Logback &amp; access logs, have a look at:</p>
+<ul>
+<li><a href="http://logback.qos.ch/access.html">Logback access</a></li>
+<li>Logback <a href="http://logback.qos.ch/xref/ch/qos/logback/access/PatternLayout.html">PatternLayout</a></li>
+<li>logstash-logback-encoder <a href="https://github.com/logstash/logstash-logback-encoder#accessevent-patterns">AccessEvent patterns</a></li>
+</ul>
+<h3 id="logstash-configuration">Logstash configuration</h3>
+<p>In order to be able to send directly logs in JSON format to Logstash, you will simply have to setup a Logstash <code>tcp</code>
+input with <code>json</code> codec as follows:</p>
+<pre><code class="yaml">input {
+  tcp {
+    port =&gt; 4321
+    codec =&gt; json
+  }
+}
+</code></pre></div>
+        </div>
+
+    <footer class="col-md-12">
+        <hr>
+        
+        <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+    </footer>
+
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script src="../js/base.js"></script>
+    </body>
+</html>
