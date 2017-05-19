@@ -1,0 +1,14 @@
+# ===================================================================
+# Profile for shipping logs to RTLog
+# ===================================================================
+logging:
+  config: classpath:logback-rtlog.xml
+
+custom:
+  access_log:
+    # no easy way to push access logs as RTLog for now :-(
+    config: logback-access.xml
+  logging:
+    principal:
+      # hash_algo: hashcode
+      hash_algo: none

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- access log configuration to ship logs directly to Logstash -->
+<configuration debug="true" scan="false" scanPeriod="30 seconds">
+	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+
+    <!-- TCP -->
+    <appender name="TCP" class="net.logstash.logback.appender.LogstashAccessTcpSocketAppender">
+    	<!-- remote Logstash server -->
+    	<remoteHost>${LOGSTASH_HOST}</remoteHost>
+        <port>${LOGSTASH_PORT}</port>
+		<encoder class="net.logstash.logback.encoder.AccessEventCompositeJsonEncoder">
+			<providers>
+				<timestamp/>
+				<version/>
+				<pattern>
+					<pattern>
+			        {
+			        	"@project":"${MD_PROJECT:--}",
+			        	"@app":"notifier",
+			        	"@type":"http",
+			        	"X-B3-TraceId":"%header{X-B3-TraceId}",
+					    "req": {
+					      "host": "%clientHost",
+					      "url": "%requestURL",
+					      "meth": "%requestMethod",
+					      "uri": "%requestURI"
+					    },
+					    "resp": {
+					      "status": "#asLong{%statusCode}",
+					      "size": "#asLong{%bytesSent}"
+					    },
+					    "elapsed": "#asLong{%elapsedTime}"
+			        }
+					</pattern>
+				</pattern>
+			</providers>
+		</encoder>
+	</appender>
+
+	<appender-ref ref="TCP" />
+</configuration>

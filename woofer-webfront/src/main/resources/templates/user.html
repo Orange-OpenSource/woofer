@@ -1,0 +1,155 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Woofer</title>
+</head>
+<body>
+
+	<div layout:fragment="content" class="container">
+		<h1 th:text="#{user.title(${user.fullname})}">USER</h1>
+	
+		<!-- User summary (name, woofs count, followers, ... -->
+		<div class="row">
+			<div class="usersummary">
+				<a class="user" th:href="@{/users/{user}(user=${user.id})}" th:utext="#{user.link(${user.id}, ${user.fullname})}">user link</a>
+				<!-- link action -->
+				<div th:switch="${T(com.orange.oswe.demo.woofer.webfront.domain.UserLinkHelper).getLinkAction(me, user).name()}">
+					<form name="form" th:case="SUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${user.id})}" method="POST">
+						<input type="hidden" name="action" value="SUBSCRIBE" />
+						<input type="submit" th:value="#{linkAction.SUBSCRIBE}" class="btn btn-sm btn-info" />
+					</form>
+					<form name="form" th:case="UNSUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${user.id})}" method="POST">
+						<input type="hidden" name="action" value="UNSUBSCRIBE" />
+						<input type="submit" th:value="#{linkAction.UNSUBSCRIBE}" class="btn btn-sm btn-warning" />
+					</form>
+				</div>
+				<div class="box">
+					<label>Woofs</label><span class="count" th:text="${woofsCount}">53</span>
+				</div>
+				<div class="box">
+					<label>Followees</label><span class="count" th:text="${followeesCount}">2</span>
+				</div>
+				<div class="box">
+					<label>Followers</label><span class="count" th:text="${followersCount}">4</span>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<!-- Followers -->
+			<div class="col-lg-6">
+				<h2 th:text="#{user.followers.title(${user.fullname})}">User's followers</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<td>User</td>
+							<td>Subscription</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="other : ${user.followers}">
+							<td><a class="user" th:href="@{/users/{user}(user=${other.id})}"  th:utext="#{user.link(${other.id}, ${other.fullname})}">user link</a></td>
+							<td th:switch="${T(com.orange.oswe.demo.woofer.webfront.domain.UserLinkHelper).getLinkAction(me, other).name()}">
+							<form name="form" th:case="SUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${other.id})}" method="POST">
+								<input type="hidden" name="action" value="SUBSCRIBE" />
+								<input type="submit" th:value="#{linkAction.SUBSCRIBE}" class="btn btn-xs btn-info" />
+							</form>
+							<form name="form" th:case="UNSUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${other.id})}" method="POST">
+								<input type="hidden" name="action" value="UNSUBSCRIBE" />
+								<input type="submit" th:value="#{linkAction.UNSUBSCRIBE}" class="btn btn-xs btn-warning" />
+							</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<!-- Followees -->
+			<div class="col-lg-6">
+				<h2 th:text="#{user.followees.title(${user.fullname})}">User's followees</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<td>User</td>
+							<td>Subscription</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="other : ${user.followees}">
+							<td><a class="user" th:href="@{/users/{user}(user=${other.id})}"  th:utext="#{user.link(${other.id}, ${other.fullname})}">user link</a></td>
+							<td th:switch="${T(com.orange.oswe.demo.woofer.webfront.domain.UserLinkHelper).getLinkAction(me, other).name()}">
+							<form name="form" th:case="SUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${other.id})}" method="POST">
+								<input type="hidden" name="action" value="SUBSCRIBE" />
+								<input type="submit" th:value="#{linkAction.SUBSCRIBE}" class="btn btn-xs btn-info" />
+							</form>
+							<form name="form" th:case="UNSUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${other.id})}" method="POST">
+								<input type="hidden" name="action" value="UNSUBSCRIBE" />
+								<input type="submit" th:value="#{linkAction.UNSUBSCRIBE}" class="btn btn-xs btn-warning" />
+							</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<!-- Woofs -->
+		<div id="wall" class="row">
+			<h2 th:text="#{user.woofs.title(${user.fullname})}">User's woofs</h2>
+			<!-- Pagination Bar -->
+			<div>
+				<ul class='pagination'>
+					<!-- Prev -->
+					<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(woofs)}">
+						<a th:href="@{?pageNumber={page}(page=${woofs.metadata.number-1})}">«</a>
+					</li>
+					<li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(woofs)}" class="disabled">
+						<span>«</span>
+					</li>
+					<!-- First -->
+					<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(woofs)}">
+						<a th:href="@{?pageNumber=0}">1</a>
+					</li>
+					<li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(woofs)}" class="active">
+						<span>1</span>
+					</li>
+				    <!-- ellipsis -->
+				    <li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).hasEllipsisBefore(woofs)}" class="disabled">
+				        <span>…</span>
+				    </li>
+				    <!-- up to 5 pages -->
+				    <li th:each="pageNo : ${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).getNearPages(woofs)}"  th:class="${pageNo == woofs.metadata.number} ? 'active'">
+				        <a th:unless="${pageNo == woofs.metadata.number}" th:href="@{?pageNumber={page}(page=${pageNo})}" th:text="${pageNo+1}">2</a>
+				        <span th:if="${pageNo == woofs.metadata.number}" th:text="${pageNo+1}">2</span>
+				    </li>
+				    <!-- ellipsis -->
+				    <li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).hasEllipsisAfter(woofs)}" class="disabled">
+				        <span>…</span>
+				    </li>
+					<!-- Last -->
+					<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(woofs)}">
+						<a th:href="@{?pageNumber={page}(page=${woofs.metadata.totalPages-1})}" th:text="${woofs.metadata.totalPages}">10</a>
+					</li>
+					<li th:if="${woofs.metadata.totalPages > 1 and T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(woofs)}" class="active">
+						<span th:text="${woofs.metadata.totalPages}">10</span>
+					</li>
+					<!-- Next -->
+					<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(woofs)}">
+						<a th:href="@{?pageNumber={page}(page=${woofs.metadata.number+1})}">»</a>
+					</li>
+					<li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(woofs)}" class="disabled">
+						<span>»</span>
+					</li>
+				</ul>
+			</div>
+			<div class="woof" th:each="woof : ${woofs.content}">
+				<a class="user author" th:href="@{/users/{user}(user=${user.id})}" th:utext="#{user.link(${user.id}, ${user.fullname})}">author link</a>
+				<span class="date" th:text="${#calendars.format(woof.datetime)}">date</span>
+				<p class="message" th:text="${woof.message}">message</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+

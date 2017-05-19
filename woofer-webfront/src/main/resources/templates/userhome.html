@@ -1,0 +1,115 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Woofer</title>
+</head>
+<body>
+
+	<div layout:fragment="content" class="container">
+		<h1 th:text="#{userhome.title(${me.fullname})}">Welcome to Woofer, USER</h1>
+		
+		<script type="text/javascript">
+		function checkWoofSize(area) {
+			var len = area.value.length;
+			$('#counter').text(140-len);
+			if(len == 0 || len > 140) {
+				// disable push and warn
+				$('#woofer button').prop('disabled', 'disabled');
+				if(len > 140) {
+					$('#counter').addClass('warn');
+				}
+			} else {
+				$('#woofer button').removeProp('disabled');
+				$('#counter').removeClass('warn');
+			}
+		}
+		</script>
+		
+		<div class="row">
+			<!-- Woofer input -->
+			<div class="col-lg-6">
+			<form role="form" id="woofer" class="collapsed" th:action="@{/woofs}" method="POST">
+				<!-- TODO: delay collapse -->
+				<textarea name="content" placeholder="What's up?" onkeyup="checkWoofSize(this)" onfocus="$('#woofer').removeClass('collapsed')" onblurOFF="$('#woofer').addClass('collapsed')"></textarea>
+				<div class="bar">
+				<span class="tip glyphicon glyphicon-info-sign" aria-hidden="true" th:title="#{woof.tip}"></span>
+				<span id="counter">140</span>
+				<button type="submit" class="btn-sm btn-primary" disabled="disabled">Woof</button>
+				</div>
+			</form>
+			</div>
+			
+			<!-- User summary (name, woofs count, followers, ... -->
+			<div class="col-lg-3 usersummary">
+				<a class="user" th:href="@{/users/{user}(user=${me.id})}" th:utext="#{user.link(${me.id}, ${me.fullname})}">me</a>
+				<div class="box">
+					<label>Woofs</label><span class="count" th:text="${woofsCount}">53</span>
+				</div>
+				<div class="box">
+					<label>Followees</label><span class="count" th:text="${followeesCount}">2</span>
+				</div>
+				<div class="box">
+					<label>Followers</label><span class="count" th:text="${followersCount}">4</span>
+				</div>
+			</div>
+		</div>
+		
+		<!-- Wall -->
+		<div id="wall" class="row">
+			<!-- Pagination Bar -->
+			<div>
+				<ul class='pagination'>
+					<!-- Prev -->
+					<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(woofs)}">
+						<a th:href="@{?pageNumber={page}(page=${woofs.metadata.number-1})}">«</a>
+					</li>
+					<li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(woofs)}" class="disabled">
+						<span>«</span>
+					</li>
+					<!-- First -->
+					<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(woofs)}">
+						<a th:href="@{?pageNumber=0}">1</a>
+					</li>
+					<li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(woofs)}" class="active">
+						<span>1</span>
+					</li>
+				    <!-- ellipsis -->
+				    <li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).hasEllipsisBefore(woofs)}" class="disabled">
+				        <span>…</span>
+				    </li>
+				    <!-- up to 5 pages -->
+				    <li th:each="pageNo : ${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).getNearPages(woofs)}"  th:class="${pageNo == woofs.metadata.number} ? 'active'">
+				        <a th:unless="${pageNo == woofs.metadata.number}" th:href="@{?pageNumber={page}(page=${pageNo})}" th:text="${pageNo+1}">2</a>
+				        <span th:if="${pageNo == woofs.metadata.number}" th:text="${pageNo+1}">2</span>
+				    </li>
+				    <!-- ellipsis -->
+				    <li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).hasEllipsisAfter(woofs)}" class="disabled">
+				        <span>…</span>
+				    </li>
+					<!-- Last -->
+					<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(woofs)}">
+						<a th:href="@{?pageNumber={page}(page=${woofs.metadata.totalPages-1})}" th:text="${woofs.metadata.totalPages}">10</a>
+					</li>
+					<li th:if="${woofs.metadata.totalPages > 1 and T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(woofs)}" class="active">
+						<span th:text="${woofs.metadata.totalPages}">10</span>
+					</li>
+					<!-- Next -->
+					<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(woofs)}">
+						<a th:href="@{?pageNumber={page}(page=${woofs.metadata.number+1})}">»</a>
+					</li>
+					<li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(woofs)}" class="disabled">
+						<span>»</span>
+					</li>
+				</ul>
+			</div>
+			<div class="woof" th:each="woof : ${woofs}">
+				<a class="user author" th:href="@{/users/{user}(user=${woof.author.id})}" th:utext="#{user.link(${woof.author.id}, ${woof.author.fullname})}">author link</a>
+				<span class="date" th:text="${#calendars.format(woof.datetime)}">date</span>
+				<p class="message" th:text="${woof.message}">message</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+

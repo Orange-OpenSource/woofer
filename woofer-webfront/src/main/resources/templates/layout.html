@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+	<title>Layout</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"></link>
+	<link rel="stylesheet" th:href="@{/resources/css/woofer.css}"></link>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<!-- header fragment with navigation bar -->
+	<header id="header" th:fragment="header">
+		<nav class="navbar navbar-default">
+		  <div class="container">
+		    <div class="navbar-header">
+		      <a class="navbar-brand" href="/"></a>
+		    </div>
+		    <div class="collapse navbar-collapse" id="navbar-collapse">
+		      <ul class="nav navbar-nav">
+	            <li><a href="/"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+	            <li><a href="/users"><span class="glyphicon glyphicon-user"></span> Users</a></li>
+		      </ul>
+			  
+		      <ul class="nav navbar-nav navbar-right">
+			    <!-- not logged -->
+		        <li class="dropdown" th:unless="${#httpServletRequest.userPrincipal}">
+		          <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-user"></span> not logged <span class="caret"></span></a>
+		          <ul class="dropdown-menu">
+		            <li><a href="#" data-toggle="modal" data-target="#login-dialog"><span class="glyphicon glyphicon-log-in"></span> log-in</a></li>
+		            <li><a th:href="@{/signup}"><span class="glyphicon glyphicon-check"></span> sign-up</a></li>
+		          </ul>
+		        </li>
+			    <!-- logged -->
+		        <li class="dropdown" th:if="${#httpServletRequest.userPrincipal}">
+		          <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-user"></span> <span th:text="${#httpServletRequest.userPrincipal.name}">user name</span> <span class="caret"></span></a>
+		          <ul class="dropdown-menu">
+		            <li><a th:href="@{/logout}"><span class="glyphicon glyphicon-log-out"></span> log-out</a></li>
+		          </ul>
+		        </li>
+		      </ul>
+		    </div>
+		  </div>
+		</nav>
+	</header>
+	
+	<!-- page content -->
+	<div class="container" layout:fragment="content">Page content</div>
+
+	<!-- login popup (unauthenticated) -->
+	<div id="login-dialog" class="modal fade" role="dialog" th:unless="${#httpServletRequest.userPrincipal}">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h3 th:text="#{login.title}">Sign in with your account</h3>
+			</div>
+			<div class="modal-body">
+			<form role="form" id="signin" class="sign-form" th:action="@{/login}" method="POST">
+				<!-- infos & errors -->
+				<div role="alert" th:if="${statusMessage}" th:class="'alert ' + ${statusMessageClass}?: 'alert-info'" th:text="${statusMessage}">
+					status message
+				</div>
+				<div role="alert" th:if="${param.error}" class="alert alert-danger">
+					<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+					There was an error, please try again.
+				</div>
+				
+				<div class="form-group">
+					<!-- login/email -->
+					<div class="input-group">
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
+						<label class="sr-only" for="username">Login</label>
+						<input id="username" class="form-control" name="username" placeholder="Login" />
+					</div>
+					
+					<!-- password -->
+					<div class="input-group">
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
+						<label class="sr-only" for="password">Password</label>
+						<input id="password" class="form-control" name="password" type="password" placeholder="Password" />
+					</div>
+					
+					<!-- remember me -->
+					<div class="input-group">
+						<label><input type="checkbox" name="rememberMe"/> <span>remember me</span></label> 
+					</div>
+				</div>
+				<div class="form-group">
+					<!-- submit -->
+					<button type="submit" class="btn btn-primary">Login</button>
+				</div>
+			</form>
+			</div>
+			<div class="modal-footer">
+				You don't have any account? <strong><a th:href="@{/signup}" onclick="signtoggle()">Create it</a></strong>.
+			</div>
+		</div>
+	</div>
+	</div>
+
+	<!-- footer -->
+	<footer id="footer" th:fragment="footer">
+		<div class="container">
+			<a id="oswe" class="pull-right" href="#"></a>
+			<ul class="list-inline">
+				<li><a href="https://github.com/Orange-OpenSource/woofer" title="Woofer on GitHub">GitHub</a></li>
+				<li><a href="https://orange-opensource.github.io/woofer" title="Woofer Tutorials (GitHup pages)">Tutorials</a></li>
+			</ul>
+			<p class="text-muted"><i>© Orange 2017</i></p>
+		</div>
+	</footer>
+</body>
+</html>

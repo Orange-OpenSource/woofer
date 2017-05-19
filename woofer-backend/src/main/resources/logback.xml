@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- application logging default configuration: STDOUT -->
+<configuration debug="true" scan="false" scanPeriod="30 seconds">
+	<!-- using the CustomThrowableConverterWithHash with mostly any logback appender -->
+	<!-- 1: define "%sEx" as a conversion rule involving -->
+	<conversionRule conversionWord="sEx" converterClass="com.orange.common.logging.logback.CustomThrowableConverterWithHash" />
+	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+ 		<layout class="ch.qos.logback.classic.PatternLayout">
+ 			<!-- 2: use the "%sEx" rule in the layout pattern -->
+			<Pattern>JAVA&gt; %d{HH:mm:ss.SSS} %-5level [traceId:%X{X-B3-TraceId:--}|parentSpan:%X{X-B3-ParentSpanId}|span:%X{X-B3-SpanId}] %logger - %msg%n%sEx</Pattern>
+		</layout>
+		<!-- rest of your config ... -->
+	</appender>
+	
+	<!-- rest of your config ... -->
+	<logger name="com.orange" level="DEBUG" />
+
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

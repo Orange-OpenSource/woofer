@@ -1,0 +1,13 @@
+# ===================================================================
+# Profile for shipping logs to Logstash
+# ===================================================================
+logging:
+  config: classpath:logback-logstash.xml
+
+custom:
+  access_log:
+    config: logback-access-logstash.xml
+  logging:
+    principal:
+      # hash_algo: hashcode
+      hash_algo: none

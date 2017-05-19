@@ -1,0 +1,16 @@
+# ===================================================================
+# Profile on OpenShift v3
+# ===================================================================
+# disable Eureka
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+ribbon:
+  eureka:
+    enabled: false
+# define notifier host
+woofer-notifier:
+  ribbon:
+    listOfServers: notifier:${NOTIFIER_SERVICE_PORT}
+    

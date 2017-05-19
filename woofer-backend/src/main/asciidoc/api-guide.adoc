@@ -1,0 +1,267 @@
+= Woofer Backend API Guide
+Pierre Smeyers;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[[overview]]
+= Overview
+
+[[overview-http-verbs]]
+== HTTP verbs
+
+Woofer Backend API tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP verbs.
+
+|===
+| Verb | Usage
+
+| `GET`
+| Used to retrieve a resource
+
+| `PUT`
+| Used to overwrite an existing resource, or to create a new resource with a given identifier
+
+| `POST`
+| Used to create a new resource with an unspecified identifier
+
+| `PATCH`
+| Used to update an existing resource, including partial updates
+
+| `DELETE`
+| Used to delete an existing resource
+|===
+
+[[overview-http-status-codes]]
+== HTTP status codes
+
+RESTful users tries to adhere as closely as possible to standard HTTP and REST conventions in its
+use of HTTP status codes.
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| The request completed successfully
+
+| `201 Created`
+| A new resource has been created successfully. The resource's URI is available from the response's
+`Location` header
+
+| `204 No Content`
+| An update to an existing resource has been applied successfully
+
+| `400 Bad Request`
+| The request was malformed. The response body will include an error providing further information
+
+| `404 Not Found`
+| The requested resource did not exist
+|===
+
+[[overview-errors]]
+== Errors
+
+Whenever an error response (status code >= 400) is returned, the body will contain a JSON array of objects
+that describe the problem. The error object has the following structure:
+
+include::{snippets}/error-example/response-fields.adoc[]
+
+For example, a request that attempts to apply a non-existent Woof to a user will produce a
+`400 Bad Request` response:
+
+include::{snippets}/error-example/http-response.adoc[]
+
+[[error-codes]]
+=== Error codes
+
+Here is the the complete list of Woofer errors with their description.
+
+include::{snippets}/error-codes.adoc[]
+
+[[overview-hypermedia]]
+== Hypermedia
+
+RESTful Users uses hypermedia and resources include links to other resources in their
+responses. Responses are in http://stateless.co/hal_specification.html[Hypertext Application
+from resource to resource.
+Language (HAL)] format. Links can be found beneath the `_links` key. Users of the API should
+not create URIs themselves, instead they should use the above-described links to navigate
+
+[[resources]]
+= Resources
+
+
+[[resources-users]]
+== Users
+
+The `users` resources is used to create and list users
+
+[[resources-users-list]]
+=== Listing users
+
+A `GET` request will list all of the service's users.
+
+==== Request parameters
+
+include::{snippets}/users-list-example/request-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/users-list-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/users-list-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/users-list-example/http-response.adoc[]
+
+[[resources-users-list-links]]
+==== Links
+
+include::{snippets}/users-list-example/links.adoc[]
+
+
+[[resources-users-create]]
+=== Creating a user
+
+A `POST` request is used to create a user
+
+==== Request structure
+
+include::{snippets}/users-create-example/request-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/users-create-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/users-create-example/http-response.adoc[]
+
+
+
+[[resources-woofs]]
+== Woofs
+
+The `woofs` resource is used to create and list woofs.
+
+
+[[resources-woofs-list]]
+=== Listing Woofs
+
+A `GET` request will list all of the woofs.
+
+==== Request parameters
+
+include::{snippets}/woofs-list-example/request-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/woofs-list-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/woofs-list-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/woofs-list-example/http-response.adoc[]
+
+[[resources-woofs-list-links]]
+==== Links
+
+include::{snippets}/woofs-list-example/links.adoc[]
+
+
+
+[[resources-woofs-create]]
+=== Posting a Woof
+
+A `POST` request is used to post a woof
+
+==== Path parameters
+
+include::{snippets}/woofs-create-example/path-parameters.adoc[]
+
+==== Example request
+
+include::{snippets}/woofs-create-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/woofs-create-example/http-response.adoc[]
+
+
+
+[[resources-user]]
+== User
+
+The user resource is used to retrieve, update and delete individual users
+
+
+[[resources-user-links]]
+=== Links
+
+include::{snippets}/user-get-example/links.adoc[]
+
+
+[[resources-user-retrieve]]
+=== Retrieve a user
+
+A `GET` request will retrieve the details of a user
+
+==== Request parameters
+
+include::{snippets}/user-get-example/request-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/user-get-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/user-get-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/user-get-example/http-response.adoc[]
+
+
+[[resources-woof]]
+== Woof
+
+The woof resource is used to retrieve individual woofs
+
+
+[[resources-woof-links]]
+=== Links
+
+include::{snippets}/woof-get-example/links.adoc[]
+
+
+[[resources-woof-retrieve]]
+=== Retrieve a Woof
+
+A `GET` request will retrieve the details of a Woof
+
+==== Request parameters
+
+include::{snippets}/woof-get-example/request-parameters.adoc[]
+
+==== Response structure
+
+include::{snippets}/woof-get-example/response-fields.adoc[]
+
+==== Example request
+
+include::{snippets}/woof-get-example/curl-request.adoc[]
+
+==== Example response
+
+include::{snippets}/woof-get-example/http-response.adoc[]
+

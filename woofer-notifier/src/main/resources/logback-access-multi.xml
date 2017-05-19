@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- access log configuration to ship logs to 2 systems -->
+<configuration debug="true" scan="false" scanPeriod="30 seconds">
+	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+
+	<!-- (private) Logstash -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashAccessTcpSocketAppender">
+    	<remoteHost>${LOGSTASH_HOST}</remoteHost>
+        <port>${LOGSTASH_PORT}</port>
+		<encoder class="net.logstash.logback.encoder.AccessEventCompositeJsonEncoder">
+			<providers>
+				<timestamp/>
+				<version/>
+				<pattern>
+					<pattern>
+			        {
+			        	"@app":"notifier",
+			        	"@type":"http",
+			        	"X-B3-TraceId":"%header{X-B3-TraceId}",
+					    "req": {
+					      "host": "%clientHost",
+					      "url": "%requestURL",
+					      "meth": "%requestMethod",
+					      "uri": "%requestURI"
+					    },
+					    "resp": {
+					      "status": "#asLong{%statusCode}",
+					      "size": "#asLong{%bytesSent}"
+					    },
+					    "elapsed": "#asLong{%elapsedTime}"
+			        }
+					</pattern>
+				</pattern>
+			</providers>
+		</encoder>
+	</appender>
+
+	<!-- LOGaaS -->
+	<appender name="LOGAAS" class="net.logstash.logback.appender.LogstashAccessTcpSocketAppender">
+    	<remoteHost>${LOGAAS_HOST}</remoteHost>
+        <port>${LOGAAS_PORT}</port>
+		<encoder class="net.logstash.logback.encoder.AccessEventCompositeJsonEncoder">
+			<providers>
+				<timestamp/>
+				<version/>
+				<pattern>
+					<pattern>
+					{
+						"@project":"${MD_PROJECT:--}",
+						"@app":"notifier",
+						"@type":"http",
+						"X-B3-TraceId":"%header{X-B3-TraceId}",
+						"req": {
+							"host": "%clientHost",
+							"url": "%requestURL",
+							"meth": "%requestMethod",
+							"uri": "%requestURI"
+						},
+						"resp": {
+							"status": "#asLong{%statusCode}",
+							"size": "#asLong{%bytesSent}"
+						},
+						"elapsed": "#asLong{%elapsedTime}"
+					}
+					</pattern>
+				</pattern>
+			</providers>
+		</encoder>
+	</appender>
+
+	<appender-ref ref="LOGSTASH" />
+	<appender-ref ref="LOGAAS" />
+</configuration>

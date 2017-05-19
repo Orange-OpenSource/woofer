@@ -1,0 +1,10 @@
+.project
+*.md.html
+.classpath
+.settings
+target
+build
+bin/
+*.gz
+/woofer.iml
+/.idea/

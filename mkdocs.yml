@@ -1,0 +1,16 @@
+site_name: Woofer
+site_url: https://orange-opensource.github.io/Woofer
+site_author: Pierre Smeyers
+site_description: Woofer's project website
+site_favicon: img/favicon.png
+repo_url: https://github.com/Orange-OpenSource/Woofer
+site_dir: target/site
+theme: bootstrap
+
+pages:
+    - Home: index.md
+    - Spring Boot: spring-boot.md
+    - Logging:
+      - Recommendations: recommendations.md
+      - Code: logging-code.md
+      - Incident Analysis: incident-analysis.md

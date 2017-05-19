@@ -1,0 +1,11 @@
+# ===================================================================
+# Profile on OpenShift v3
+# ===================================================================
+# disable Eureka
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+ribbon:
+  eureka:
+    enabled: false

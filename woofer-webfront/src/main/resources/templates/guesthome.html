@@ -1,0 +1,66 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Woofer</title>
+</head>
+<body>
+
+	<div layout:fragment="content" class="container">
+		<h1 th:text="#{guesthome.title}">Welcome to Woofer</h1>
+		<div class="row">
+			<div class="col-lg-4">
+			<form role="form" id="signin" class="sign-form" th:action="@{/login}" method="POST">
+				<h2 th:text="#{login.title}">Sign in with your account</h2>
+				
+				<!-- info -->
+				<div class="well">
+				Already a user ? Log in below.<br/>
+				If not, <strong><a th:href="@{/signup}" onclick="signtoggle()">create your account</a></strong>.
+				</div>
+
+				<!-- infos & errors -->
+				<div role="alert" th:if="${statusMessage}" th:class="'alert ' + ${statusMessageClass}?: 'alert-info'" th:text="${statusMessage}">
+					status message
+				</div>
+				<div role="alert" th:if="${param.logout}" class="alert alert-info">
+					<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+					You have been logged out</div>
+				<div role="alert" th:if="${param.error}" class="alert alert-danger">
+					<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+					There was an error, please try again.
+				</div>
+				
+				<div class="form-group">
+					<!-- login/email -->
+					<div class="input-group">
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
+						<label class="sr-only" for="username">Login</label>
+						<input id="username" class="form-control" name="username" placeholder="Login" />
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-info-sign" aria-hidden="true" th:title="#{login.login.tip}"></span></span>
+					</div>
+					
+					<!-- password -->
+					<div class="input-group">
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
+						<label class="sr-only" for="password">Password</label>
+						<input id="password" class="form-control" name="password" type="password" placeholder="Password" />
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-info-sign" aria-hidden="true" th:title="#{login.password.tip}"></span></span>
+					</div>
+					
+					<!-- remember me -->
+					<div class="input-group">
+						<label><input type="checkbox" name="rememberMe"/> <span>remember me</span></label> 
+					</div>
+				</div>
+				<div class="form-group">
+					<!-- submit -->
+					<button type="submit" class="btn btn-primary btn-block">Login</button>
+				</div>
+			</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+

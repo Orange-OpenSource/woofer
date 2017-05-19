@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS users (
+	`id` VARCHAR(255) NOT NULL, 
+	email VARCHAR(255), 
+	fullname VARCHAR(255), 
+	PRIMARY KEY (`id`)
+);
+CREATE TABLE IF NOT EXISTS user_followers (
+	user_id VARCHAR(255) NOT NULL,
+	follower_id VARCHAR(255) NOT NULL,
+	PRIMARY KEY (user_id, follower_id),
+	CONSTRAINT FK_follower_id FOREIGN KEY (follower_id) REFERENCES users (`id`) ON DELETE CASCADE,
+	CONSTRAINT FK_followed_id FOREIGN KEY (user_id) REFERENCES users (`id`) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS woof (
+	`id` BIGINT NOT NULL AUTO_INCREMENT, 
+	`datetime` DATETIME, 
+	`message` VARCHAR(255) NOT NULL, 
+	author_id VARCHAR(255) NOT NULL, 
+	PRIMARY KEY (`id`),
+	CONSTRAINT FK_woof_author_id FOREIGN KEY (author_id) REFERENCES users (`id`) ON DELETE CASCADE
+);

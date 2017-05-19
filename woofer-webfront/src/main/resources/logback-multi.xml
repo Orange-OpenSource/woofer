@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- application logging configuration to ship logs to 3 systems -->
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
+
+    <!-- (private) Logstash -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+    	<remoteHost>${LOGSTASH_HOST}</remoteHost>
+        <port>${LOGSTASH_PORT}</port>
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<provider class="com.orange.common.logging.logback.StackHashJsonProvider"/>
+	        <throwableConverter class="com.orange.common.logging.logback.CustomThrowableConverterWithHash" />
+	        <customFields>{"@app":"webfront","@type":"java"}</customFields>
+		</encoder>
+    </appender>
+
+	<!-- LOGaaS -->
+	<appender name="LOGAAS" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+    	<remoteHost>${LOGAAS_HOST}</remoteHost>
+        <port>${LOGAAS_PORT}</port>
+		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+			<provider class="com.orange.common.logging.logback.StackHashJsonProvider"/>
+			<throwableConverter class="com.orange.common.logging.logback.CustomThrowableConverterWithHash" />
+			<customFields>{"@project":"${MD_PROJECT:--}","@app":"webfront","@type":"java"}</customFields>
+		</encoder>
+	</appender>
+
+	<!-- RTLog -->
+	<appender name="RTLOG" class="ch.qos.logback.core.net.RTLogAppender">
+    	<syslogHost>${RTLOG_HOST}</syslogHost>
+        <port>${RTLOG_PORT}</port>
+        <facility>USER</facility>
+		<basicat>${RTLOG_BASICAT}</basicat>
+		<program>woofer</program>
+		<product>webfront</product>
+		<logfile>java</logfile>
+		<throwableConverter class="com.orange.common.logging.logback.CustomThrowableConverterWithHash" />
+	</appender>
+
+	<logger name="com.orange" level="DEBUG" />
+	
+	<root level="INFO">
+		<appender-ref ref="LOGSTASH" />
+        <appender-ref ref="LOGAAS" />
+		<appender-ref ref="RTLOG" />
+	</root>
+</configuration>

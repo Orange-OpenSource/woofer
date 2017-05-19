@@ -1,0 +1,102 @@
+# ===================================================================
+# COMMON SPRING BOOT PROPERTIES
+# see: https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+# ===================================================================
+
+# ----------------------------------------
+# CORE PROPERTIES
+# ----------------------------------------
+spring:
+  application:
+    name: woofer-backend
+  jpa:
+    show-sql: false
+  # DATASOURCE
+  datasource:
+    platform: hsqldb
+  # DATA REST (RepositoryRestProperties)
+  data:
+    rest:
+      base-path: /api
+  # Zipkin
+  zipkin:
+    enabled: false
+
+# ----------------------------------------
+# SERVER PROPERTIES
+# ----------------------------------------
+server:
+  port: ${PORT:8081}
+  error:
+    whitelabel:
+      enabled: false
+  session-timeout: 6000
+  tomcat:
+    # default access log is disabled: use logback instead
+    access_log_enabled: false
+    basedir: target/tomcat
+
+# ----------------------------------------
+# EUREKA
+# ----------------------------------------
+eureka:
+  instance:
+    statusPageUrlPath: ${management.contextPath}/info
+    healthCheckUrlPath: ${management.contextPath}/health
+    leaseRenewalIntervalInSeconds: 10
+    metadataMap:
+      instanceId: ${vcap.application.instance_id:${spring.application.name}:${spring.application.instance_id:${server.port}}}
+  client:
+    registryFetchIntervalSeconds: 5
+    serviceUrl:
+      defaultZone: ${vcap.services.eureka.credentials.uri:http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/}
+
+# ----------------------------------------
+# SECURITY PROPERTIES
+# ----------------------------------------
+#security.user.name=user # login username
+#security.user.password=changeme
+#security.user.role=USER # role assigned to the user
+security:
+  require-ssl: true
+  enable-csrf: true
+  basic.enabled: false
+
+# ----------------------------------------
+# ACTUATOR PROPERTIES
+# ----------------------------------------
+management:
+  security:
+    enabled: false
+    role: ADMIN
+  contextPath: /manage
+
+# ----------------------------------------
+# Hystrix, Ribbon & Feign timeout
+# ----------------------------------------
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 6000
+ribbon:
+  ConnectTimeout: 6000
+  ReadTimeout: 6000
+
+feign:
+  hystrix:
+    enabled: true
+
+# ----------------------------------------
+# CUSTOM --- Woofer
+# ----------------------------------------
+custom:
+  access_log:
+    config: logback-access.xml
+  logging:
+    principal:
+      hash_algo: none

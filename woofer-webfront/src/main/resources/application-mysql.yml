@@ -1,0 +1,21 @@
+# ===================================================================
+# Profile for MySql storage
+# ===================================================================
+spring:
+  # DATASOURCE
+  datasource: 
+    platform: mysql
+    driver-class-name: com.mysql.jdbc.Driver
+    url: ${MYSQL_DATASOURCE_URL:jdbc:mysql://localhost/frontend?autoReconnect=true}
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:}
+  jpa:
+    show-sql: ${DEBUG_SHOWSQL:false}
+    hibernate:
+      ddl-auto: update
+      naming:
+        strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        globally_quoted_identifiers: true

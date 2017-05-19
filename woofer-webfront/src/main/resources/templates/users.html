@@ -1,0 +1,41 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Woofer</title>
+</head>
+<body>
+
+	<div layout:fragment="content" class="container">
+		<h1 th:text="#{users.title}">All users</h1>
+		<table class="table">
+			<thead>
+				<tr>
+					<td th:switch="${direction.name()}">
+			            <a th:case="DESC" href="?dir=ASC"><span class="glyphicon glyphicon-sort-by-alphabet"></span> User</a>
+			            <a th:case="ASC" href="?dir=DESC"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span> User</a>
+					</td>
+					<td th:if="${#httpServletRequest.userPrincipal}">Subscription</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="other : ${users}">
+					<td><a class="user" th:href="@{/users/{user}(user=${other.id})}"  th:utext="#{user.link(${other.id}, ${other.fullname})}">user link</a></td>
+					<td th:if="${#httpServletRequest.userPrincipal}" th:switch="${T(com.orange.oswe.demo.woofer.webfront.domain.UserLinkHelper).getLinkAction(me, other).name()}">
+						<form name="form" th:case="SUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${other.id})}" method="POST">
+							<input type="hidden" name="action" value="SUBSCRIBE" />
+							<input type="submit" th:value="#{linkAction.SUBSCRIBE}" class="btn btn-xs btn-info" />
+						</form>
+						<form name="form" th:case="UNSUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${other.id})}" method="POST">
+							<input type="hidden" name="action" value="UNSUBSCRIBE" />
+							<input type="submit" th:value="#{linkAction.UNSUBSCRIBE}" class="btn btn-xs btn-warning" />
+						</form>
+						<i th:case="NONE">That's you!</i>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
+

@@ -1,0 +1,89 @@
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Woofer</title>
+</head>
+<body>
+
+	<div layout:fragment="content" class="container">
+		<h1 th:text="#{signup.title}">Welcome to Woofer</h1>
+		<div class="row">
+			<div class="col-lg-4">
+			<form role="form" id="signup" class="sign-form" th:action="@{/signup}" th:object="${createUserForm}" method="POST">
+				<!-- info -->
+				<div class="well">
+				Create a new account on Woofer.<br/>
+				If you already have an account please <strong><a href="/">log in now</a></strong>.
+				</div>
+				
+				<!-- global errors -->
+				<div th:if="${!#strings.isEmpty(message)}" class="alert alert-danger">
+				  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+				  <span th:text="${message.text}">error message</span>
+				</div>
+				<!-- field errors -->
+				<div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+				  <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+				  <span>Unable to sign up. Please fix the errors below and resubmit.</span>
+				</div>
+				
+				<div class="form-group">
+				    <!-- login -->
+					<div class="input-group" th:classappend="${#fields.hasErrors('username')} ? has-error">
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
+						<label class="sr-only" for="username">Login</label>
+						<input id="username" class="form-control" name="username" type="text" placeholder="Login" th:field="*{username}" pattern=".+" required="required"/>
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-info-sign" aria-hidden="true" th:title="#{signup.login.tip}"></span></span>
+						<span class="help-block" th:each="err : ${#fields.errors('username')}" th:text="${err}">Error</span>
+					</div>
+					<!-- full name -->
+					<div class="input-group" th:classappend="${#fields.hasErrors('fullname')} ? has-error">
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></span>
+						<label class="sr-only" for="fullname">Last name</label>
+						<input id="fullname" class="form-control" name="fullname" type="text" placeholder="Full Name" th:field="*{fullname}" pattern=".+" required="required"/>
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-info-sign" aria-hidden="true" th:title="#{signup.fullname.tip}"></span></span>
+						<span class="help-block" th:each="err : ${#fields.errors('fullname')}" th:text="${err}">Error</span>
+					</div>
+					<!-- email -->
+					<div class="input-group" th:classappend="${#fields.hasErrors('email')} ? has-error">
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></span>
+						<label class="sr-only" for="email">Email address</label>
+						<input id="email" class="form-control" name="email" type="email" placeholder="Email address" th:field="*{email}" required="required"/>
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-info-sign" aria-hidden="true" th:title="#{signup.email.tip}"></span></span>
+						<span class="help-block" th:each="err : ${#fields.errors('email')}" th:text="${err}">Error</span>
+					</div>
+				</div>
+				
+				<div class="well">
+				Password must contain at least 3 characters
+				</div>
+				
+				<div class="form-group">
+					<!-- password -->
+					<div class="input-group" th:classappend="${#fields.hasErrors('password')} ? has-error">
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
+						<label class="sr-only" for="password">Password</label>
+						<input id="password" class="form-control" name="password" type="password" placeholder="Password" th:field="*{password}" onchange="form.confirmpassword.pattern = this.value;" pattern=".{3,}" required="required"/>
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-info-sign" aria-hidden="true" th:title="#{signup.password.tip}"></span></span>
+						<span class="help-block" th:each="err : ${#fields.errors('password')}" th:text="${err}">Error</span>
+					</div>
+					<!-- password -->
+					<div class="input-group">
+						<span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
+						<label class="sr-only" for="confirmpassword">Confirm Password</label>
+						<input id="confirmpassword" class="form-control" name="confirmpassword" type="password" placeholder="Confirm Password" pattern=".{3,}" required="required"/>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<!-- submit -->
+					<button type="submit" class="btn btn-primary btn-block">Sign up</button>
+				</div>
+			</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
