@@ -104,7 +104,7 @@ Its use is quite straightforward as it only requires adding the right dependency
 
 ## Spring Boot Actuator
 
-[Spring REST Docs](http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready.html) provides a set of tools
+[Spring Boot Actuator](http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready.html) provides a set of tools
 to monitor and manage your application.
 
 Apart from default management endpoints, `woofer-webfront` and `woofer-backend` publish some business metrics to count active
