@@ -44,13 +44,13 @@ All logback [documentation here](http://logback.qos.ch/manual/index.html).
   libraries (JUL, commons-logging, Log4J, ...)
 2. **Reliability**: both projects are still actively developed, tested, documented
   and supported, with a large user community
-3. **Performance**: [SLF4J](http://www.slf4j.org/) + [logbackhttp://logback.qos.ch/)
+3. **Performance**: [SLF4J](http://www.slf4j.org/) + [Logback](http://logback.qos.ch/)
   support a feature called « parameterized logging », that significantly boosts
   logging performance for disabled logging statement, by not concatenating
   logging messages (which IS costly)
 4. **DevOps**: logback supports externalized configuration, and automatic reload
   (changing logging levels without restarting your application)
-5. ... and others; see: http://logback.qos.ch/reasonsToSwitch.html
+5. ... [and other reasons](http://logback.qos.ch/reasonsToSwitch.html)
 
 By the way, this choice is now the most popular choice in Java development, and
 is even the default setup when using full-stack web development frameworks such
@@ -179,11 +179,9 @@ user ID is a technical ID and not a personal information (such as login or email
 You'll find a [simple implementation](https://github.com/Orange-OpenSource/orange-mathoms-logging#userIds) in our `orange-mathoms-logging` library.
 
 
-### How to enrich your stack traces with signatures
+### Compute a short error signature hash
 
-Warning, this idea is pretty cool...
-
-When your system will be in production, you'll have issues. And issues are (generally) ERROR logs with stack traces. But...
+When your system will be in production, you'll have issues. And issues are (generally) `ERROR` logs with stack traces. But...
 
 * How do you track the error from the client (UI and/or API) to your logs ?
 * How will you compare stack traces ?
@@ -200,7 +198,7 @@ You could even join this signature to your client error messages for traceabilit
 
 Imagine the situation...
 
-> **The user** (_quite upset_): I just had this « Internal error [#B23F6545] occurred while calling catalog » error... your app sucks !  
+> **The user** (_quite upset_): I just had this « Internal error [#B23F6545] occurred while calling catalog » error... your app sucks !
 > **You**: no prob’, I simply type-in this « #B23F6545 » thing in my Kibana and... bing ! I get the exact stack trace, call flow, occurrences count, ... you’ll have a fix in instants !  
 > **Audience**: (applause)
 
