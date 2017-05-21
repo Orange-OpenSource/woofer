@@ -179,7 +179,7 @@ user ID is a technical ID and not a personal information (such as login or email
 You'll find a [simple implementation](https://github.com/Orange-OpenSource/orange-mathoms-logging#userIds) in our `orange-mathoms-logging` library.
 
 
-### Compute a short error signature hash
+### Make a signature hash of your errors
 
 When your system will be in production, you'll have issues. And issues are (generally) `ERROR` logs with stack traces. But...
 

@@ -89,46 +89,47 @@ Error handling in a web application is undoubtedly a complex task. It covers sev
 
 ### Error mapping
 
-In Woofer, error mapping is handled by the [ErrorTranslator](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java) class.
+As explained above, *error mapping* is the action of translating Java exceptions into HTTP errors (status, code & human readable message).
 
-It is in charge of translating any internal Java error into a [DisplayableError](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/DisplayableError.java), a structure with:
+In Woofer, this is handled by the [ErrorTranslator](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java), that translates any Java exception into a [DisplayableError](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/DisplayableError.java), a structure with:
 
-* an error code (compatible with [common Orange Partner error codes](https://developer.orange.com/apis/authentication-fr/api-reference#errors))),
 * an HTTP status,
+* an error code (based on [common Orange Partner error codes](https://developer.orange.com/apis/authentication-fr/api-reference#errors))),
 * a human friendly message.
 
-The [ErrorTranslator](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java) manages most of internal Spring exceptions: you may perfectly reuse it in your own projects.
+NOTE: [ErrorTranslator](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java) manages most of internal Spring exceptions: you may perfectly reuse it in your own projects.
 
 
 ### The error handler
 
-In Woofer, the error handling is implemented by the [WooferErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/WooferErrorController.java) controller.
+The *error handler* is a technical component linked to the underlying framework in charge of handling Java exceptions (intercept, turn it into a HTTP error thanks to the *error mapping*, and display it to the client in an appropriate way).
 
-As a `org.springframework.boot.autoconfigure.web.ErrorController` implementation, it is automatically installed by Spring as the main error handler.
+In Woofer, error handling is implemented by [WooferErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/WooferErrorController.java).
 
 It manages **content negotiation** by defining several `@RequestMapping` handling different content types. I.e. handling an 
 error upon a web browser navigation will display a user-readable error page, while handling an error occurring in a 
 JSON/REST API will return a JSON error description.
 
-It also behaves slightly differently if the error is a client error or an internal (server) error.
+It also behaves quite differently if the error is a **client** error or an **internal** (server) error.
 
-A client error (HTTP `4XX`) is supposed to be due to a wrong usage of the API or application. The error handler 
-simply displays some hints about the error (you may try this by navigating on this [link with missing parameter](http://localhost:8080/misc/err/missingParam)
-of [path that does not exist](http://localhost:8080/misc/err/noSuchUri)).
+A client error (HTTP `4XX`) is supposed to be due to a wrong usage of the API or application by the user. The error handler 
+simply displays some hints about the error (if you have started woofer locally, you may try this by navigating on this 
+[link with missing parameter](http://localhost:8080/misc/err/missingParam) of 
+[path that does not exist](http://localhost:8080/misc/err/noSuchUri)).
 
-Any server error (HTTP `5XX`) - on the contrary - probably need to raise an alert, get analyzed and fixed as fast as possible.
+A server error (HTTP `5XX`) - on the contrary - is due to an internal issue (a bloody `NullPointerException` or any technical stuff going wrong in your code), and as such needs a specific treatment:
 
-They might be due - for instance - to a bloody `NullPointerException` or any technical stuff going wrong in your code.
+* **never display a cryptic error message or ugly stack strace** to the end user, but instead display a generic *"so sorry, we're working on it"* error message ;-)
+* log the original Java error with full details to allow further analysis and maybe raise an alarm in production,
+* be able to have error traceability (see below).
 
-Server errors display an error message that includes a generated unique ID for traceability purpose.
+That's what [WooferErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/WooferErrorController.java) does in case of internal errors:
 
-The message will look like this:
+1. generates a unique error ID,
+2. displays a generic error message, that includes that unique ID (ex: *Internal error [#d7506d00-99f2c6eb90682] occurred in request 'GET /misc/err/500'*),
+3. logs the original Java error, with the unique error ID.
 
-```
-Internal error [#d7506d00-99f2c6eb90682] occurred in request 'GET /misc/err/500'
-```
-
-The stack error unique ID can be used to trace and analyze the error in Kibana.
+The unique error ID (displayed to the user) can then be used to retrieve the complete original stack trace, and start incident analysis: that's error traceability.
 
 ---
 
@@ -148,22 +149,16 @@ to enrich stack traces with unique signatures.
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- application logging configuration to ship logs directly to Logstash -->
 <configuration debug="true" scan="true" scanPeriod="30 seconds">
-  <!-- retrieve some conf from Spring -->
-  <springProperty name="collector_host" source="custom.logging.collector.host"/>
-  <springProperty name="collector_port" source="custom.logging.collector.port"/>
-  <springProperty name="appname" source="spring.application.name"/>
-  <springProperty name="project_key" source="custom.logging.project_key"/>
-
   <appender name="TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
     <!-- remote Logstash server -->
-    <remoteHost>${collector_host}</remoteHost>
-    <port>${collector_port}</port>
+    <remoteHost>${LOGSTASH_HOST}</remoteHost>
+    <port>${LOGSTASH_PORT}</port>
     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
       <!-- computes and adds a 'stack_hash' field on errors -->
-      <provider class="com.orange.experts.utils.logging.logback.StackHashJsonProvider"/>
+      <provider class="com.orange.common.logging.logback.StackHashJsonProvider"/>
       <!-- enriches the stack trace with unique hash -->
-      <throwableConverter class="com.orange.experts.utils.logging.logback.CustomThrowableConverterWithHash" />
-      <customFields>{"@project":"${project_key}","@app":"${appname}","@type":"java"}</customFields>
+      <throwableConverter class="com.orange.common.logging.logback.CustomThrowableConverterWithHash" />
+      <customFields>{"@project":"${MD_PROJECT:--}","@app":"webfront","@type":"java"}</customFields>
     </encoder>
   </appender>
   
@@ -218,12 +213,12 @@ With this configuration, a single Java log in Elasticsearch will look like this:
 |`message`|set by Logback
 |`thread_name`|set by Logback
 |`stack_trace`|set by Logback, content valuated by the `CustomThrowableConverterWithHash` component
-|`stack_hash`|custom field added by the `StackHashJsonProvider` component
-|`userId`|custom field added by the `PrincipalFilter` component
-|`sessionId`|custom field added by the `SessionIdFilter` component
-|`X-B3-TraceId`|set by Spring Cloud Sleuth for logs correlation
-|`X-B3-SpanId`|set by Spring Cloud Sleuth for logs correlation
-|`X-Span-Export`|set by Spring Cloud Sleuth for logs correlation
+|`stack_hash`|custom field set by the `StackHashJsonProvider` component
+|`userId`|custom MDC field set by the `PrincipalFilter` component
+|`sessionId`|custom MDC field set by the `SessionIdFilter` component
+|`X-B3-TraceId`|MDC field set by Spring Cloud Sleuth for logs correlation
+|`X-B3-SpanId`|MDC field set by Spring Cloud Sleuth for logs correlation
+|`X-Span-Export`|MDC field set by Spring Cloud Sleuth for logs correlation
 
 
 ### Configuration for access logs (embedded tomcat)
@@ -247,39 +242,30 @@ Here is the logback xml configuration for access log using the **logstash**
   <!-- TCP -->
   <appender name="TCP" class="net.logstash.logback.appender.LogstashAccessTcpSocketAppender">
     <!-- remote Logstash server -->
-    <remoteHost>${collector_host}</remoteHost>
-    <port>${collector_port}</port>
+    <remoteHost>${LOGSTASH_HOST}</remoteHost>
+    <port>${LOGSTASH_PORT}</port>
     <encoder class="net.logstash.logback.encoder.AccessEventCompositeJsonEncoder">
       <providers>
         <timestamp/>
         <version/>
         <pattern>
           <pattern>
-              {
-                "@project":"${project_key}",
-                "@app":"${appname}",
-                "@type":"http",
-                "X-B3-TraceId":"#nullNA{%header{X-B3-TraceId}}",
-                "userId":"#nullNA{%requestAttribute{track.userId}}",
-                "sessionId":"#nullNA{%sessionID}",
-                "req": {
-                  "host": "%clientHost",
-                  "meth": "%requestMethod",
-                  "url": "%requestURL",
-                  "uri": "%requestURI",
-                  "headers": {
-                    "ctype": "#nullNA{%header{Content-Type}}",
-                    "ua": "#nullNA{%header{User-Agent}}"
-                  }
-                },
-                "resp": {
-                  "status": "#asLong{%statusCode}",
-                  "size": "#asLong{%bytesSent}",
-                  "headers": {
-                    "ctype": "#nullNA{%responseHeader{Content-Type}}"
-                  }
-                },
-                "elapsed": "#asLong{%elapsedTime}"
+            {
+              "@project":"${MD_PROJECT:--}",
+              "@app":"webfront",
+              "@type":"http",
+              "X-B3-TraceId":"%header{X-B3-TraceId}",
+              "req": {
+                "host": "%clientHost",
+                "url": "%requestURL",
+                "meth": "%requestMethod",
+                "uri": "%requestURI"
+              },
+              "resp": {
+                "status": "#asLong{%statusCode}",
+                "size": "#asLong{%bytesSent}"
+              },
+              "elapsed": "#asLong{%elapsedTime}"
               }
           </pattern>
         </pattern>
@@ -291,7 +277,8 @@ Here is the logback xml configuration for access log using the **logstash**
 </configuration>
 ```
 
-NOTE: You can see that this configuration allows us to control exactly the JSON structure of an access log sent to [Logstash](https://www.elastic.co/products/elasticsearch[Elasticsearch] via link:https://www.elastic.co/products/logstash). +
+NOTE: You can see that this configuration allows us to control exactly the JSON structure of an access log sent to [Elasticsearch](https://www.elastic.co/products/elasticsearch) via [Logstash](https://www.elastic.co/products/logstash).
+
 Notice that the access logs also use the same custom fields as Java logs (`@app`, `@type`, `@project`, with `@type` equals to `http`).
 
 For more info about Logback & access logs, have a look at:
