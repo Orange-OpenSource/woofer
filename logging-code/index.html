@@ -202,32 +202,38 @@ understand and follow the callflow and spot the root cause of an error.</p>
 </dl>
 
 <h3 id="error-mapping">Error mapping</h3>
-<p>In Woofer, error mapping is handled by the <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java">ErrorTranslator</a> class.</p>
-<p>It is in charge of translating any internal Java error into a <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/DisplayableError.java">DisplayableError</a>, a structure with:</p>
+<p>As explained above, <em>error mapping</em> is the action of translating Java exceptions into HTTP errors (status, code &amp; human readable message).</p>
+<p>In Woofer, this is handled by the <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java">ErrorTranslator</a>, that translates any Java exception into a <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/DisplayableError.java">DisplayableError</a>, a structure with:</p>
 <ul>
-<li>an error code (compatible with <a href="https://developer.orange.com/apis/authentication-fr/api-reference#errors">common Orange Partner error codes</a>)),</li>
 <li>an HTTP status,</li>
+<li>an error code (based on <a href="https://developer.orange.com/apis/authentication-fr/api-reference#errors">common Orange Partner error codes</a>)),</li>
 <li>a human friendly message.</li>
 </ul>
-<p>The <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java">ErrorTranslator</a> manages most of internal Spring exceptions: you may perfectly reuse it in your own projects.</p>
+<p>NOTE: <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java">ErrorTranslator</a> manages most of internal Spring exceptions: you may perfectly reuse it in your own projects.</p>
 <h3 id="the-error-handler">The error handler</h3>
-<p>In Woofer, the error handling is implemented by the <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/WooferErrorController.java">WooferErrorController</a> controller.</p>
-<p>As a <code>org.springframework.boot.autoconfigure.web.ErrorController</code> implementation, it is automatically installed by Spring as the main error handler.</p>
+<p>The <em>error handler</em> is a technical component linked to the underlying framework in charge of handling Java exceptions (intercept, turn it into a HTTP error thanks to the <em>error mapping</em>, and display it to the client in an appropriate way).</p>
+<p>In Woofer, error handling is implemented by <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/WooferErrorController.java">WooferErrorController</a>.</p>
 <p>It manages <strong>content negotiation</strong> by defining several <code>@RequestMapping</code> handling different content types. I.e. handling an 
 error upon a web browser navigation will display a user-readable error page, while handling an error occurring in a 
 JSON/REST API will return a JSON error description.</p>
-<p>It also behaves slightly differently if the error is a client error or an internal (server) error.</p>
-<p>A client error (HTTP <code>4XX</code>) is supposed to be due to a wrong usage of the API or application. The error handler 
-simply displays some hints about the error (you may try this by navigating on this <a href="http://localhost:8080/misc/err/missingParam">link with missing parameter</a>
-of <a href="http://localhost:8080/misc/err/noSuchUri">path that does not exist</a>).</p>
-<p>Any server error (HTTP <code>5XX</code>) - on the contrary - probably need to raise an alert, get analyzed and fixed as fast as possible.</p>
-<p>They might be due - for instance - to a bloody <code>NullPointerException</code> or any technical stuff going wrong in your code.</p>
-<p>Server errors display an error message that includes a generated unique ID for traceability purpose.</p>
-<p>The message will look like this:</p>
-<pre><code>Internal error [#d7506d00-99f2c6eb90682] occurred in request 'GET /misc/err/500'
-</code></pre>
-
-<p>The stack error unique ID can be used to trace and analyze the error in Kibana.</p>
+<p>It also behaves quite differently if the error is a <strong>client</strong> error or an <strong>internal</strong> (server) error.</p>
+<p>A client error (HTTP <code>4XX</code>) is supposed to be due to a wrong usage of the API or application by the user. The error handler 
+simply displays some hints about the error (if you have started woofer locally, you may try this by navigating on this 
+<a href="http://localhost:8080/misc/err/missingParam">link with missing parameter</a> of 
+<a href="http://localhost:8080/misc/err/noSuchUri">path that does not exist</a>).</p>
+<p>A server error (HTTP <code>5XX</code>) - on the contrary - is due to an internal issue (a bloody <code>NullPointerException</code> or any technical stuff going wrong in your code), and as such needs a specific treatment:</p>
+<ul>
+<li><strong>never display a cryptic error message or ugly stack strace</strong> to the end user, but instead display a generic <em>"so sorry, we're working on it"</em> error message ;-)</li>
+<li>log the original Java error with full details to allow further analysis and maybe raise an alarm in production,</li>
+<li>be able to have error traceability (see below).</li>
+</ul>
+<p>That's what <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/WooferErrorController.java">WooferErrorController</a> does in case of internal errors:</p>
+<ol>
+<li>generates a unique error ID,</li>
+<li>displays a generic error message, that includes that unique ID (ex: <em>Internal error [#d7506d00-99f2c6eb90682] occurred in request 'GET /misc/err/500'</em>),</li>
+<li>logs the original Java error, with the unique error ID.</li>
+</ol>
+<p>The unique error ID (displayed to the user) can then be used to retrieve the complete original stack trace, and start incident analysis: that's error traceability.</p>
 <hr />
 <h2 id="shipping-logs-directly-to-logstash">Shipping logs directly to Logstash</h2>
 <p>Using the <strong>logstash</strong> <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html">profile</a>,
@@ -240,22 +246,16 @@ to enrich stack traces with unique signatures.</p>
 <pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!-- application logging configuration to ship logs directly to Logstash --&gt;
 &lt;configuration debug=&quot;true&quot; scan=&quot;true&quot; scanPeriod=&quot;30 seconds&quot;&gt;
-  &lt;!-- retrieve some conf from Spring --&gt;
-  &lt;springProperty name=&quot;collector_host&quot; source=&quot;custom.logging.collector.host&quot;/&gt;
-  &lt;springProperty name=&quot;collector_port&quot; source=&quot;custom.logging.collector.port&quot;/&gt;
-  &lt;springProperty name=&quot;appname&quot; source=&quot;spring.application.name&quot;/&gt;
-  &lt;springProperty name=&quot;project_key&quot; source=&quot;custom.logging.project_key&quot;/&gt;
-
   &lt;appender name=&quot;TCP&quot; class=&quot;net.logstash.logback.appender.LogstashTcpSocketAppender&quot;&gt;
     &lt;!-- remote Logstash server --&gt;
-    &lt;remoteHost&gt;${collector_host}&lt;/remoteHost&gt;
-    &lt;port&gt;${collector_port}&lt;/port&gt;
+    &lt;remoteHost&gt;${LOGSTASH_HOST}&lt;/remoteHost&gt;
+    &lt;port&gt;${LOGSTASH_PORT}&lt;/port&gt;
     &lt;encoder class=&quot;net.logstash.logback.encoder.LogstashEncoder&quot;&gt;
       &lt;!-- computes and adds a 'stack_hash' field on errors --&gt;
-      &lt;provider class=&quot;com.orange.experts.utils.logging.logback.StackHashJsonProvider&quot;/&gt;
+      &lt;provider class=&quot;com.orange.common.logging.logback.StackHashJsonProvider&quot;/&gt;
       &lt;!-- enriches the stack trace with unique hash --&gt;
-      &lt;throwableConverter class=&quot;com.orange.experts.utils.logging.logback.CustomThrowableConverterWithHash&quot; /&gt;
-      &lt;customFields&gt;{&quot;@project&quot;:&quot;${project_key}&quot;,&quot;@app&quot;:&quot;${appname}&quot;,&quot;@type&quot;:&quot;java&quot;}&lt;/customFields&gt;
+      &lt;throwableConverter class=&quot;com.orange.common.logging.logback.CustomThrowableConverterWithHash&quot; /&gt;
+      &lt;customFields&gt;{&quot;@project&quot;:&quot;${MD_PROJECT:--}&quot;,&quot;@app&quot;:&quot;webfront&quot;,&quot;@type&quot;:&quot;java&quot;}&lt;/customFields&gt;
     &lt;/encoder&gt;
   &lt;/appender&gt;
 
@@ -354,27 +354,27 @@ to enrich stack traces with unique signatures.</p>
 </tr>
 <tr>
 <td><code>stack_hash</code></td>
-<td>custom field added by the <code>StackHashJsonProvider</code> component</td>
+<td>custom field set by the <code>StackHashJsonProvider</code> component</td>
 </tr>
 <tr>
 <td><code>userId</code></td>
-<td>custom field added by the <code>PrincipalFilter</code> component</td>
+<td>custom MDC field set by the <code>PrincipalFilter</code> component</td>
 </tr>
 <tr>
 <td><code>sessionId</code></td>
-<td>custom field added by the <code>SessionIdFilter</code> component</td>
+<td>custom MDC field set by the <code>SessionIdFilter</code> component</td>
 </tr>
 <tr>
 <td><code>X-B3-TraceId</code></td>
-<td>set by Spring Cloud Sleuth for logs correlation</td>
+<td>MDC field set by Spring Cloud Sleuth for logs correlation</td>
 </tr>
 <tr>
 <td><code>X-B3-SpanId</code></td>
-<td>set by Spring Cloud Sleuth for logs correlation</td>
+<td>MDC field set by Spring Cloud Sleuth for logs correlation</td>
 </tr>
 <tr>
 <td><code>X-Span-Export</code></td>
-<td>set by Spring Cloud Sleuth for logs correlation</td>
+<td>MDC field set by Spring Cloud Sleuth for logs correlation</td>
 </tr>
 </tbody>
 </table>
@@ -394,39 +394,30 @@ class by adding the <a href="http://logback.qos.ch/apidocs/ch/qos/logback/access
   &lt;!-- TCP --&gt;
   &lt;appender name=&quot;TCP&quot; class=&quot;net.logstash.logback.appender.LogstashAccessTcpSocketAppender&quot;&gt;
     &lt;!-- remote Logstash server --&gt;
-    &lt;remoteHost&gt;${collector_host}&lt;/remoteHost&gt;
-    &lt;port&gt;${collector_port}&lt;/port&gt;
+    &lt;remoteHost&gt;${LOGSTASH_HOST}&lt;/remoteHost&gt;
+    &lt;port&gt;${LOGSTASH_PORT}&lt;/port&gt;
     &lt;encoder class=&quot;net.logstash.logback.encoder.AccessEventCompositeJsonEncoder&quot;&gt;
       &lt;providers&gt;
         &lt;timestamp/&gt;
         &lt;version/&gt;
         &lt;pattern&gt;
           &lt;pattern&gt;
-              {
-                &quot;@project&quot;:&quot;${project_key}&quot;,
-                &quot;@app&quot;:&quot;${appname}&quot;,
-                &quot;@type&quot;:&quot;http&quot;,
-                &quot;X-B3-TraceId&quot;:&quot;#nullNA{%header{X-B3-TraceId}}&quot;,
-                &quot;userId&quot;:&quot;#nullNA{%requestAttribute{track.userId}}&quot;,
-                &quot;sessionId&quot;:&quot;#nullNA{%sessionID}&quot;,
-                &quot;req&quot;: {
-                  &quot;host&quot;: &quot;%clientHost&quot;,
-                  &quot;meth&quot;: &quot;%requestMethod&quot;,
-                  &quot;url&quot;: &quot;%requestURL&quot;,
-                  &quot;uri&quot;: &quot;%requestURI&quot;,
-                  &quot;headers&quot;: {
-                    &quot;ctype&quot;: &quot;#nullNA{%header{Content-Type}}&quot;,
-                    &quot;ua&quot;: &quot;#nullNA{%header{User-Agent}}&quot;
-                  }
-                },
-                &quot;resp&quot;: {
-                  &quot;status&quot;: &quot;#asLong{%statusCode}&quot;,
-                  &quot;size&quot;: &quot;#asLong{%bytesSent}&quot;,
-                  &quot;headers&quot;: {
-                    &quot;ctype&quot;: &quot;#nullNA{%responseHeader{Content-Type}}&quot;
-                  }
-                },
-                &quot;elapsed&quot;: &quot;#asLong{%elapsedTime}&quot;
+            {
+              &quot;@project&quot;:&quot;${MD_PROJECT:--}&quot;,
+              &quot;@app&quot;:&quot;webfront&quot;,
+              &quot;@type&quot;:&quot;http&quot;,
+              &quot;X-B3-TraceId&quot;:&quot;%header{X-B3-TraceId}&quot;,
+              &quot;req&quot;: {
+                &quot;host&quot;: &quot;%clientHost&quot;,
+                &quot;url&quot;: &quot;%requestURL&quot;,
+                &quot;meth&quot;: &quot;%requestMethod&quot;,
+                &quot;uri&quot;: &quot;%requestURI&quot;
+              },
+              &quot;resp&quot;: {
+                &quot;status&quot;: &quot;#asLong{%statusCode}&quot;,
+                &quot;size&quot;: &quot;#asLong{%bytesSent}&quot;
+              },
+              &quot;elapsed&quot;: &quot;#asLong{%elapsedTime}&quot;
               }
           &lt;/pattern&gt;
         &lt;/pattern&gt;
@@ -438,8 +429,8 @@ class by adding the <a href="http://logback.qos.ch/apidocs/ch/qos/logback/access
 &lt;/configuration&gt;
 </code></pre>
 
-<p>NOTE: You can see that this configuration allows us to control exactly the JSON structure of an access log sent to <a href="https://www.elastic.co/products/elasticsearch[Elasticsearch] via link:https://www.elastic.co/products/logstash">Logstash</a>. +
-Notice that the access logs also use the same custom fields as Java logs (<code>@app</code>, <code>@type</code>, <code>@project</code>, with <code>@type</code> equals to <code>http</code>).</p>
+<p>NOTE: You can see that this configuration allows us to control exactly the JSON structure of an access log sent to <a href="https://www.elastic.co/products/elasticsearch">Elasticsearch</a> via <a href="https://www.elastic.co/products/logstash">Logstash</a>.</p>
+<p>Notice that the access logs also use the same custom fields as Java logs (<code>@app</code>, <code>@type</code>, <code>@project</code>, with <code>@type</code> equals to <code>http</code>).</p>
 <p>For more info about Logback &amp; access logs, have a look at:</p>
 <ul>
 <li><a href="http://logback.qos.ch/access.html">Logback access</a></li>
@@ -458,11 +449,11 @@ input with <code>json</code> codec as follows:</p>
 </code></pre></div>
         </div>
 
-    <footer class="col-md-12">
-        <hr>
-        
-        <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
-    </footer>
+	<footer class="col-md-12">
+		<hr>
+		
+		<p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+	</footer>
 
 
         <script src="../js/jquery-1.10.2.min.js"></script>

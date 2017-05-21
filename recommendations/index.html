@@ -196,13 +196,13 @@ work with <a href="http://logging.apache.org/log4j/2.x/">Log4J 2</a> as the back
   libraries (JUL, commons-logging, Log4J, ...)</li>
 <li><strong>Reliability</strong>: both projects are still actively developed, tested, documented
   and supported, with a large user community</li>
-<li><strong>Performance</strong>: <a href="http://www.slf4j.org/">SLF4J</a> + [logbackhttp://logback.qos.ch/)
+<li><strong>Performance</strong>: <a href="http://www.slf4j.org/">SLF4J</a> + <a href="http://logback.qos.ch/">Logback</a>
   support a feature called « parameterized logging », that significantly boosts
   logging performance for disabled logging statement, by not concatenating
   logging messages (which IS costly)</li>
 <li><strong>DevOps</strong>: logback supports externalized configuration, and automatic reload
   (changing logging levels without restarting your application)</li>
-<li>... and others; see: http://logback.qos.ch/reasonsToSwitch.html</li>
+<li>... <a href="http://logback.qos.ch/reasonsToSwitch.html">and other reasons</a></li>
 </ol>
 <p>By the way, this choice is now the most popular choice in Java development, and
 is even the default setup when using full-stack web development frameworks such
@@ -293,9 +293,8 @@ a single user !</p>
 <p><strong>Warning</strong>: for security/privacy reasons, it is highly recommended that the
 user ID is a technical ID and not a personal information (such as login or email address).</p>
 <p>You'll find a <a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#userIds">simple implementation</a> in our <code>orange-mathoms-logging</code> library.</p>
-<h3 id="how-to-enrich-your-stack-traces-with-signatures">How to enrich your stack traces with signatures</h3>
-<p>Warning, this idea is pretty cool...</p>
-<p>When your system will be in production, you'll have issues. And issues are (generally) ERROR logs with stack traces. But...</p>
+<h3 id="make-a-signature-hash-of-your-errors">Make a signature hash of your errors</h3>
+<p>When your system will be in production, you'll have issues. And issues are (generally) <code>ERROR</code> logs with stack traces. But...</p>
 <ul>
 <li>How do you track the error from the client (UI and/or API) to your logs ?</li>
 <li>How will you compare stack traces ?</li>
@@ -309,7 +308,7 @@ user ID is a technical ID and not a personal information (such as login or email
 <p>You could even join this signature to your client error messages for traceability.</p>
 <p>Imagine the situation...</p>
 <blockquote>
-<p><strong>The user</strong> (<em>quite upset</em>): I just had this « Internal error [#B23F6545] occurred while calling catalog » error... your app sucks !<br />
+<p><strong>The user</strong> (<em>quite upset</em>): I just had this « Internal error [#B23F6545] occurred while calling catalog » error... your app sucks !
 <strong>You</strong>: no prob’, I simply type-in this « #B23F6545 » thing in my Kibana and... bing ! I get the exact stack trace, call flow, occurrences count, ... you’ll have a fix in instants !<br />
 <strong>Audience</strong>: (applause)</p>
 </blockquote>
@@ -340,11 +339,11 @@ library, you’ll be able to:</p>
 </ul></div>
         </div>
 
-    <footer class="col-md-12">
-        <hr>
-        
-        <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
-    </footer>
+	<footer class="col-md-12">
+		<hr>
+		
+		<p>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</p>
+	</footer>
 
 
         <script src="../js/jquery-1.10.2.min.js"></script>
