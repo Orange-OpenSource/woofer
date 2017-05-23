@@ -7,6 +7,8 @@
  */
 package com.orange.oswe.demo.woofer.notifier;
 
+import com.orange.oswe.demo.woofer.commons.error.WooferErrorController;
+import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.ExportMetricWriter;
@@ -14,18 +16,17 @@ import org.springframework.boot.actuate.metrics.jmx.JmxMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jmx.export.MBeanExporter;
 
-import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
-
 /**
  * The Woofer Notifier service
  */
-@SpringBootApplication(scanBasePackages={"com.orange.oswe.demo.woofer.notifier", "com.orange.oswe.demo.woofer.commons.error"})
+@SpringBootApplication
 @EnableEurekaClient
 @EnableAutoConfiguration
 public class NotifierApp {
@@ -49,5 +50,13 @@ public class NotifierApp {
 	@Profile({ "jmx" })
 	public MetricWriter metricWriter(MBeanExporter exporter) {
 		return new JmxMetricWriter(exporter);
+	}
+
+	/**
+	 * Override default Spring Boot {@link ErrorController} with ours
+	 */
+	@Bean
+	public ErrorController errorController() {
+		return new WooferErrorController();
 	}
 }

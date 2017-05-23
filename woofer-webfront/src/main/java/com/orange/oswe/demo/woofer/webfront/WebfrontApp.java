@@ -11,12 +11,14 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.Filter;
 
+import com.orange.oswe.demo.woofer.commons.error.WooferErrorController;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.ExportMetricWriter;
 import org.springframework.boot.actuate.metrics.jmx.JmxMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
@@ -35,7 +37,7 @@ import feign.Contract;
 /**
  * The Woofer webfront application
  */
-@SpringBootApplication(scanBasePackages = { "com.orange.oswe.demo.woofer.webfront", "com.orange.oswe.demo.woofer.commons.error" })
+@SpringBootApplication
 @EnableEurekaClient
 @EnableFeignClients
 public class WebfrontApp {
@@ -90,5 +92,13 @@ public class WebfrontApp {
 	@Bean
 	public Filter sessionIdFilter() {
 		return new SessionIdFilter();
+	}
+
+	/**
+	 * Override default Spring Boot {@link ErrorController} with ours
+	 */
+	@Bean
+	public ErrorController errorController() {
+		return new WooferErrorController();
 	}
 }

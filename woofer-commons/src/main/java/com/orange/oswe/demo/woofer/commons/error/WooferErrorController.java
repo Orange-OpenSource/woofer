@@ -7,14 +7,17 @@
  */
 package com.orange.oswe.demo.woofer.commons.error;
 
-import java.io.IOException;
-import java.util.Deque;
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.stream.Collectors;
 
+import com.orange.common.logging.utils.ErrorSignature;
+import com.orange.oswe.demo.woofer.commons.error.ErrorCode.Doc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.web.ErrorController;
@@ -28,41 +31,41 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.orange.common.logging.utils.ErrorSignature;
-import com.orange.oswe.demo.woofer.commons.error.ErrorCode.Doc;
-
 /**
  * Global Error controller
  * <p>
  * Renders any {@link Exception} into a view or a readable JSON structure
  */
 @Controller
+@RequestMapping(WooferErrorController.PATH)
 @ControllerAdvice
 public class WooferErrorController implements ErrorController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WooferErrorController.class);
 
+	public static final String PATH = "/error";
+
 	@Override
 	public String getErrorPath() {
-		return "/error";
+		return PATH;
 	}
 
 	/**
 	 * Handles all errors and forwards to itself
 	 */
-	@ExceptionHandler({ Exception.class, })
+	@ExceptionHandler(Exception.class)
 	public void handleException(Exception ex, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// set the exception as a request attribute (same as JEE)
 		req.setAttribute(RequestDispatcher.ERROR_EXCEPTION, ex);
 
-		// forward to the error page (in cola-front sevlet)
-		req.getRequestDispatcher("/error").forward(req, resp);
+		// forward to the error controller
+		req.getRequestDispatcher(PATH).forward(req, resp);
 	}
 
 	/**
 	 * Html error handling
 	 */
-	@RequestMapping(value = "/error", produces = { MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XHTML_XML_VALUE })
+	@RequestMapping(produces = { MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XHTML_XML_VALUE })
 	public ModelAndView errorAsHtml(HttpServletRequest request, HttpServletResponse response) {
 		DisplayableError error = getError(request, response);
 
@@ -74,7 +77,7 @@ public class WooferErrorController implements ErrorController {
 				description = doc.value();
 			}
 		} catch (NoSuchFieldException | SecurityException e) {
-			LOGGER.debug("Parsing error while parsing exception", e);
+			LOGGER.warn("Parsing error while parsing exception", e);
 		}
 
 		HttpStatus httpStatus = error.getStatus().getStatus();
@@ -89,23 +92,14 @@ public class WooferErrorController implements ErrorController {
 	}
 
 	/**
-	 * JSON error handling
+	 * JSON error handling (default)
 	 */
-	@RequestMapping(value = "/error", produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping
 	public ResponseEntity<DisplayableError[]> errorAsJson(HttpServletRequest request, HttpServletResponse response) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		DisplayableError error = getError(request, response);
 		return new ResponseEntity<>(new DisplayableError[] { error }, headers, error.getStatus().getStatus());
-	}
-
-	/**
-	 * default error handling (status code only)
-	 */
-	@RequestMapping(value = "/error")
-	public ResponseEntity<Void> errorDefault(HttpServletRequest request, HttpServletResponse response) {
-		DisplayableError error = getError(request, response);
-		return new ResponseEntity<>(error.getStatus().getStatus());
 	}
 
 	private DisplayableError getError(HttpServletRequest request, HttpServletResponse response) {
@@ -161,18 +155,20 @@ public class WooferErrorController implements ErrorController {
 		return error;
 	}
 
-	private String cc(String name) {
-		String[] tokens = name.split("_");
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < tokens.length; i++) {
-			if (i > 0) {
-				sb.append(' ');
-			}
-			sb.append(Character.toUpperCase(tokens[i].charAt(0)));
-			if (tokens[i].length() > 1) {
-				sb.append(tokens[i].substring(1).toLowerCase());
-			}
-		}
-		return sb.toString();
+    /**
+     * Turns an uppercase string with underscore separators into Camel Case
+     */
+	private static String cc(String name) {
+        return Arrays.stream(name.split("_")).map(WooferErrorController::capitalize).collect(Collectors.joining(" "));
 	}
+
+	private static String capitalize(String word) {
+	    if(word == null || word.isEmpty()) {
+	        return word;
+        }
+        if(word.length() == 1) {
+	        return word.toUpperCase();
+        }
+        return Character.toUpperCase(word.charAt(0)) + (word.substring(1).toLowerCase());
+    }
 }
