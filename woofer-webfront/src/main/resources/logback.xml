@@ -8,7 +8,7 @@
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
  		<layout class="ch.qos.logback.classic.PatternLayout">
  			<!-- 2: use the "%sEx" rule in the layout pattern -->
-			<Pattern>JAVA&gt; %d{HH:mm:ss.SSS} %-5level [traceId:%X{X-B3-TraceId:--}|userId:%X{userId:--}] %logger - %msg%n%sEx</Pattern>
+			<Pattern>%yellow(JAVA&gt;) %boldWhite(%d{HH:mm:ss.SSS}) %highlight(%-5level) [traceId:%X{X-B3-TraceId:--}|userId:%X{userId:--}] %cyan(%logger) - %msg%n%sEx</Pattern>
 		</layout>
 		<!-- rest of your config ... -->
 	</appender>
