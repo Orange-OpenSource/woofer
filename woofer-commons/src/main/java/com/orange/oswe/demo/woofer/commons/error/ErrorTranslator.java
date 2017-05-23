@@ -199,6 +199,8 @@ public class ErrorTranslator {
 			return ErrorCode.MethodNotSupported;
 		case NOT_ACCEPTABLE:
 			return ErrorCode.MediaTypeNotAcceptable;
+		case UNSUPPORTED_MEDIA_TYPE:
+			return ErrorCode.MediaTypeNotSupported;
 		case CONFLICT:
 			return ErrorCode.ResourceConflict;
 
