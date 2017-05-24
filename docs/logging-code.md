@@ -70,7 +70,7 @@ Error handling in a web application is undoubtedly a complex task. It covers sev
 <dl>
     <dt><strong>error mapping</strong></dt>
     <dd>
-        How Java errors should be mapped to HTTP errors? Which status code? Which (human readable) message?
+        How each Java error should be mapped to HTTP error? Which status code? Which (human readable) message?
         Generally speaking, you'll have to deal both with your own Java exceptions, and also errors from the underlying framework (Spring or else).
     </dd>
     <dl>
@@ -91,26 +91,27 @@ Error handling in a web application is undoubtedly a complex task. It covers sev
 
 As explained above, *error mapping* is the action of translating Java exceptions into HTTP errors (status, code & human readable message).
 
-In Woofer, this is handled by the [ErrorTranslator](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java), that translates any Java exception into a [DisplayableError](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/DisplayableError.java), a structure with:
+In Woofer, this is handled by the [ErrorTranslator](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java), that translates any Java exception into a [JsonError](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/JsonError.java), a structure with:
 
 * an HTTP status,
-* an error code (based on [common Orange Partner error codes](https://developer.orange.com/apis/authentication-fr/api-reference#errors))),
+* an error code (based on [common Orange Partner error codes](https://developer.orange.com/apis/authentication-fr/api-reference#errors)),
 * a human friendly message.
 
 NOTE: [ErrorTranslator](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java) manages most of internal Spring exceptions: you may perfectly reuse it in your own projects.
 
 
-### The error handler
+### Error handling
 
 The *error handler* is a technical component linked to the underlying framework in charge of handling Java exceptions (intercept, turn it into a HTTP error thanks to the *error mapping*, and display it to the client in an appropriate way).
 
-In Woofer, error handling is implemented by [WooferErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/WooferErrorController.java).
+In Woofer, error handling is implemented by:
 
-It manages **content negotiation** by defining several `@RequestMapping` handling different content types. I.e. handling an 
-error upon a web browser navigation will display a user-readable error page, while handling an error occurring in a 
-JSON/REST API will return a JSON error description.
+* [RestErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/RestErrorController.java) for basic Rest error handling (JSON),
+* [HtmlAndRestErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/mvc/HtmlAndRestErrorController.java) 
+  that extends [RestErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/RestErrorController.java)
+  and adds support for html rendering.
 
-It also behaves quite differently if the error is a **client** error or an **internal** (server) error.
+Both behave quite differently if the error is a **client** error or an **internal** (server) error.
 
 A client error (HTTP `4XX`) is supposed to be due to a wrong usage of the API or application by the user. The error handler 
 simply displays some hints about the error (if you have started woofer locally, you may try this by navigating on this 
@@ -123,13 +124,23 @@ A server error (HTTP `5XX`) - on the contrary - is due to an internal issue (a b
 * log the original Java error with full details to allow further analysis and maybe raise an alarm in production,
 * be able to have error traceability (see below).
 
-That's what [WooferErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/WooferErrorController.java) does in case of internal errors:
+That's what [RestErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/RestErrorController.java) does in case of internal errors:
 
 1. generates a unique error ID,
-2. displays a generic error message, that includes that unique ID (ex: *Internal error [#d7506d00-99f2c6eb90682] occurred in request 'GET /misc/err/500'*),
-3. logs the original Java error, with the unique error ID.
+2. adds this ID to the response headers (`X-Error-Uid`),
+3. displays a generic error message, that includes this unique ID (ex: *Internal error [#d7506d00-99f2c6eb90682] occurred in request 'GET /misc/err/500'*),
+4. logs the original Java error, with the unique error ID.
 
 The unique error ID (displayed to the user) can then be used to retrieve the complete original stack trace, and start incident analysis: that's error traceability.
+
+
+NOTE: Spring supports [lots of ways of managing exceptions](https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc) 
+(probably too many). I chose to implement it with:
+
+* `HandlerExceptionResolver`: to intercept exceptions and forward to the error controller,
+* `ErrorController`: declares the component as the controller in charge of rendering the error.
+
+Pretty hard to tell if this implementation is academic or not, but - well - it works fine.
 
 ---
 
@@ -183,7 +194,7 @@ With this configuration, a single Java log in Elasticsearch will look like this:
   "HOSTNAME": "oswewooffront",
   "@app": "woofer-webfront",
   "@type": "java",
-  "logger_name": "com.orange.oswe.demo.woofer.commons.error.WooferErrorController",
+  "logger_name": "com.orange.oswe.demo.woofer.commons.error.RestErrorController",
   "level": "ERROR",
   "level_value": 40000,
   "message": "Internal error [#fe8ad9ce-317d85359a8531] occurred in request 'POST /woofs'",

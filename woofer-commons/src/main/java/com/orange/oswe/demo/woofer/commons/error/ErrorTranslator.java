@@ -12,6 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonLocation;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonMappingException.Reference;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
@@ -30,121 +35,128 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
-import com.fasterxml.jackson.core.JsonLocation;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonMappingException.Reference;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-
 /**
- * Component in charge of translating any technical or functional {@link Exception} into a {@link DisplayableError}
- * <p>
- * Manages most of Spring errors, or retrieves the http status from a {@link ResponseStatus} annotation (if present in
- * the handled {@link Exception} class), or else assumes it is an internal error ({@code 500} http status).
+ * Component in charge of translating any technical or functional {@link Exception} into a {@link JsonError}:
+ * <ol>
+ *   <li>Manages most of Spring errors,
+ *   <li>retrieves the http status from a {@link ResponseStatus} annotation (if present in the handled {@link Exception} class),
+ *   <li>or else assumes it is an internal error ({@code 500} http status).
+ * </ol>
  */
 public class ErrorTranslator {
 
-	public final static Logger LOGGER = LoggerFactory.getLogger(ErrorTranslator.class);
+	private final static Logger LOGGER = LoggerFactory.getLogger(ErrorTranslator.class);
 
 	private ErrorTranslator() {
 	}
 
-	public static DisplayableError build(Throwable error) {
+	/**
+	 * Translates the given exception into a {@link JsonError}
+	 * @param error exception to translate
+	 * @return translate error details
+	 */
+	public static JsonError build(Throwable error) {
 		if (error instanceof AuthenticationException) {
 			// TODO: several Unauthorized codes here (missing/invalid/expired credentials)
 			// TODO native message ???
-			return new DisplayableError(ErrorCode.MissingCredentials, error);
+			return new JsonError(ErrorCode.MissingCredentials, error);
 		} else if (error instanceof NoSuchRequestHandlingMethodException) {
 			// message is ok
-			return new DisplayableError(ErrorCode.ServiceNotFound, "No matching handler found for request.");
+			return new JsonError(ErrorCode.ServiceNotFound, "No matching handler found for request.");
 		} else if (error instanceof HttpRequestMethodNotSupportedException) {
 			// message is ok
-			return new DisplayableError(ErrorCode.MethodNotSupported, error);
+			return new JsonError(ErrorCode.MethodNotSupported, error);
 		} else if (error instanceof HttpMediaTypeNotSupportedException) {
 			// message is ok
-			return new DisplayableError(ErrorCode.MediaTypeNotSupported, error);
+			return new JsonError(ErrorCode.MediaTypeNotSupported, error);
 		} else if (error instanceof HttpMediaTypeNotAcceptableException) {
 			// message is ok
-			return new DisplayableError(ErrorCode.MediaTypeNotAcceptable, error);
+			return new JsonError(ErrorCode.MediaTypeNotAcceptable, error);
 		} else if (error instanceof MissingServletRequestParameterException) {
 			// message is ok
-			return new DisplayableError(ErrorCode.MissingParameter, error);
+			return new JsonError(ErrorCode.MissingParameter, error);
 		} else if (error instanceof TypeMismatchException) {
 			// need to rewrite message (too technical)
-			TypeMismatchException tme = (TypeMismatchException) error;
-			StringBuilder msg = new StringBuilder();
-			if(tme.getPropertyName() == null) {
-				msg.append("A parameter");
-			} else {
-				msg.append("Parameter '").append(tme.getPropertyName()).append("'");
-			}
-			msg.append(" with value <").append(String.valueOf(tme.getValue())).append(">");
-			if(tme.getRequiredType() == null) {
-				msg.append(" is not valid (see documentation).");
-			} else {
-				msg.append(" is not a valid <").append(tme.getRequiredType().getSimpleName()).append("> (see documentation).");
-			}
-			return new DisplayableError(ErrorCode.InvalidParameter, msg.toString());
+			return buildTypeMismatch((TypeMismatchException) error);
 		} else if (error instanceof HttpMessageNotReadableException) {
 			// need to rewrite message (too technical)
 			if(error.getCause() instanceof JsonMappingException) {
-				JsonMappingException jme = (JsonMappingException) error.getCause();
-				StringBuilder locationHint = new StringBuilder();
-				JsonLocation location = jme.getLocation();
-				if(location != null) {
-					locationHint.append(" at line#").append(location.getLineNr()).append(", col#")
-					.append(location.getColumnNr());
-					if(location.getCharOffset() >= 0) {
-						locationHint.append(" (char#").append(location.getCharOffset()).append(")");
-					}
-				}
-				List<Reference> path = jme.getPath();
-				if(path != null) {
-					locationHint.append(" on <root>");
-					for(Reference ref : path) {
-						if(ref.getFieldName() == null) {
-							locationHint.append("[").append(ref.getIndex()).append("]");
-						} else {
-							locationHint.append(".").append(ref.getFieldName());
-						}
-					}
-				}
-				if(error.getCause() instanceof UnrecognizedPropertyException) {
-					UnrecognizedPropertyException upe = (UnrecognizedPropertyException)error.getCause();
-					return new DisplayableError(ErrorCode.InvalidRequestBody, "Invalid request body"+locationHint.toString()+": unrecognized property '"+(upe.getPropertyName())+"' (see documentation).");
-				} else if(error.getCause() instanceof InvalidFormatException) {
-					InvalidFormatException ife = (InvalidFormatException)error.getCause();
-					Class<?> type = ife.getTargetType();
-					return new DisplayableError(ErrorCode.InvalidRequestBody, "Invalid request body"+locationHint.toString()+": value <"+ife.getValue()+"> "+(type == null ? "is invalid" : "is not a valid <"+type.getSimpleName()+">")+" (see documentation).");
-				} else {
-					return new DisplayableError(ErrorCode.InvalidRequestBody, "Invalid request body"+locationHint.toString()+" (see documentation).");
-				}
+				return buildJsonMapping((JsonMappingException) error.getCause());
 			} else {
-				return new DisplayableError(ErrorCode.InvalidRequestBody, "Request body is invalid and could not be read (see documentation).");
+				return new JsonError(ErrorCode.InvalidRequestBody, "Request body is invalid and could not be read (see documentation).");
 			}
 		} else if (error instanceof HttpMessageNotWritableException) {
 			// this is most probably an internal exception that occurred while JSON serialization
 			// need to rewrite message (too technical)
-			return new DisplayableError(ErrorCode.InternalError, "An internal error occurred while serializing the response");
+			return new JsonError(ErrorCode.InternalError, "An internal error occurred while serializing the response");
 		} else if (error instanceof MethodArgumentNotValidException) {
 			// need to rewrite message (too technical)
 			String name = ((MethodArgumentNotValidException) error).getParameter().getParameterName();
-			return new DisplayableError(ErrorCode.InvalidParameter, "Parameter '"+name+"' is not valid (see documentation).");
+			return new JsonError(ErrorCode.InvalidParameter, "Parameter '"+name+"' is not valid (see documentation).");
 		} else if (error instanceof MissingServletRequestPartException) {
 			// message is ok
-			return new DisplayableError(ErrorCode.MissingRequestPart, error);
+			return new JsonError(ErrorCode.MissingRequestPart, error);
 		} else if (error instanceof BindException) {
 			// need to rewrite message (too technical)
 			String name = ((BindException) error).getNestedPath();
-			return new DisplayableError(ErrorCode.InvalidParameter, "Parameter '"+name+"' is not valid (see documentation).");
+			return new JsonError(ErrorCode.InvalidParameter, "Parameter '"+name+"' is not valid (see documentation).");
 		} else if (error instanceof NoHandlerFoundException) {
 			// need to rewrite message (too technical)
-			return new DisplayableError(ErrorCode.ServiceNotFound, "No handler found for "+(((NoHandlerFoundException) error).getHttpMethod())+" "+(((NoHandlerFoundException) error).getRequestURL()));
+			return new JsonError(ErrorCode.ServiceNotFound, "No handler found for "+(((NoHandlerFoundException) error).getHttpMethod())+" "+(((NoHandlerFoundException) error).getRequestURL()));
 		} else {
 			// default
 			ErrorCode code = getDefaultCode(findStatusByAnnotation(error.getClass()));
-			return new DisplayableError(code, error);
+			return new JsonError(code, error);
 		}
+	}
+
+	private static JsonError buildTypeMismatch(TypeMismatchException tme) {
+		StringBuilder msg = new StringBuilder();
+		if(tme.getPropertyName() == null) {
+            msg.append("A parameter");
+        } else {
+            msg.append("Parameter '").append(tme.getPropertyName()).append("'");
+        }
+		msg.append(" with value <").append(String.valueOf(tme.getValue())).append(">");
+		if(tme.getRequiredType() == null) {
+            msg.append(" is not valid (see documentation).");
+        } else {
+            msg.append(" is not a valid <").append(tme.getRequiredType().getSimpleName()).append("> (see documentation).");
+        }
+		return new JsonError(ErrorCode.InvalidParameter, msg.toString());
+	}
+
+	private static JsonError buildJsonMapping(JsonMappingException jme) {
+		StringBuilder locationHint = new StringBuilder();
+		JsonLocation location = jme.getLocation();
+		if(location != null) {
+            locationHint.append(" at line#").append(location.getLineNr()).append(", col#")
+            .append(location.getColumnNr());
+            if(location.getCharOffset() >= 0) {
+                locationHint.append(" (char#").append(location.getCharOffset()).append(")");
+            }
+        }
+		List<Reference> path = jme.getPath();
+		if(path != null) {
+            locationHint.append(" on <root>");
+            for(Reference ref : path) {
+                if(ref.getFieldName() == null) {
+                    locationHint.append("[").append(ref.getIndex()).append("]");
+                } else {
+                    locationHint.append(".").append(ref.getFieldName());
+                }
+            }
+        }
+		if(jme instanceof UnrecognizedPropertyException) {
+            UnrecognizedPropertyException upe = (UnrecognizedPropertyException)jme;
+            return new JsonError(ErrorCode.InvalidRequestBody, "Invalid request body"+locationHint.toString()+": unrecognized property '"+(upe.getPropertyName())+"' (see documentation).");
+        } else if(jme instanceof InvalidFormatException) {
+            InvalidFormatException ife = (InvalidFormatException)jme;
+            Class<?> type = ife.getTargetType();
+            return new JsonError(ErrorCode.InvalidRequestBody, "Invalid request body"+locationHint.toString()+": value <"+ife.getValue()+"> "+(type == null ? "is invalid" : "is not a valid <"+type.getSimpleName()+">")+" (see documentation).");
+        } else {
+            return new JsonError(ErrorCode.InvalidRequestBody, "Invalid request body"+locationHint.toString()+" (see documentation).");
+        }
 	}
 
 	private static final Map<Class<? extends Throwable>, HttpStatus> type2Status = new HashMap<>();
@@ -182,6 +194,9 @@ public class ErrorTranslator {
 		return cachedStatus;
 	}
 
+	/**
+	 * Retrieves the default {@link ErrorCode} from an {@link HttpStatus}
+	 */
 	public static ErrorCode getDefaultCode(HttpStatus status) {
 		if (status == null) {
 			return ErrorCode.InternalError;

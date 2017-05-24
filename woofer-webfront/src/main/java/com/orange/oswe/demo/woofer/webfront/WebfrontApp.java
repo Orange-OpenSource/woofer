@@ -7,18 +7,21 @@
  */
 package com.orange.oswe.demo.woofer.webfront;
 
+import javax.servlet.Filter;
 import java.security.NoSuchAlgorithmException;
 
-import javax.servlet.Filter;
-
-import com.orange.oswe.demo.woofer.commons.error.WooferErrorController;
+import com.orange.common.logging.web.PrincipalFilter;
+import com.orange.common.logging.web.SessionIdFilter;
+import com.orange.oswe.demo.woofer.commons.error.JsonErrorDecoder;
+import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
+import feign.Contract;
+import feign.codec.ErrorDecoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.ExportMetricWriter;
 import org.springframework.boot.actuate.metrics.jmx.JmxMetricWriter;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
@@ -27,12 +30,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import com.orange.common.logging.web.PrincipalFilter;
-import com.orange.common.logging.web.SessionIdFilter;
-import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
-
-import feign.Contract;
 
 /**
  * The Woofer webfront application
@@ -95,10 +92,10 @@ public class WebfrontApp {
 	}
 
 	/**
-	 * Override default Spring Boot {@link ErrorController} with ours
+	 * Override Feign {@link ErrorDecoder}
 	 */
 	@Bean
-	public ErrorController errorController() {
-		return new WooferErrorController();
+	public ErrorDecoder errorDecoder() {
+		return new JsonErrorDecoder();
 	}
 }

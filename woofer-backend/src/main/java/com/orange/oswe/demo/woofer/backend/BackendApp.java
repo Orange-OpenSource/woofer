@@ -7,9 +7,11 @@
  */
 package com.orange.oswe.demo.woofer.backend;
 
-import com.orange.oswe.demo.woofer.commons.error.WooferErrorController;
+import com.orange.oswe.demo.woofer.commons.error.JsonErrorDecoder;
+import com.orange.oswe.demo.woofer.commons.error.RestErrorController;
 import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
 import feign.Contract;
+import feign.codec.ErrorDecoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.ExportMetricWriter;
@@ -68,6 +70,14 @@ public class BackendApp {
 	 */
 	@Bean
 	public ErrorController errorController() {
-		return new WooferErrorController();
+		return new RestErrorController();
+	}
+
+	/**
+	 * Override default Feign {@link ErrorDecoder}
+	 */
+	@Bean
+	public ErrorDecoder errorDecoder() {
+		return new JsonErrorDecoder();
 	}
 }

@@ -7,7 +7,7 @@
  */
 package com.orange.oswe.demo.woofer.notifier;
 
-import com.orange.oswe.demo.woofer.commons.error.WooferErrorController;
+import com.orange.oswe.demo.woofer.commons.error.RestErrorController;
 import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -57,6 +57,6 @@ public class NotifierApp {
 	 */
 	@Bean
 	public ErrorController errorController() {
-		return new WooferErrorController();
+		return new RestErrorController();
 	}
 }
