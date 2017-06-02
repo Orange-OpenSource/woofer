@@ -1,5 +1,5 @@
 # Woofer demo application
-[![Build Status](https://travis-ci.org/Orange-OpenSource/Woofer.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/Woofer)
+[![Build Status](https://travis-ci.org/Orange-OpenSource/woofer.svg?branch=master)](https://travis-ci.org/Orange-OpenSource/woofer)
 
 This projects is a showcase web app that demonstrates both **logging best practices** (based on our 
 [orange-mathoms-logging](https://github.com/Orange-OpenSource/orange-mathoms-logging) library), as well as providing a 
