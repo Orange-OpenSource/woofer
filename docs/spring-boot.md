@@ -50,7 +50,12 @@ to adapt to several environments.
 
 [Spring Data JPA](http://projects.spring.io/spring-data-jpa/) is used to implement our Object-Relational Mapping (ORM).
 
-It allows creating Data Access Objects (called `Respositories` in Spring terminology) simply by annotation and interfaces.
+It allows creating Data Access Objects (called `Respositories` in Spring terminology) simply by annotations and interfaces.
+
+See:
+
+* [UserRepository.java](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/repository/UserRepository.java)
+* [WoofRepository.java](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/repository/WoofRepository.java)
 
 ---
 
@@ -65,9 +70,7 @@ feature.
 See:
 
 * [User.java](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/domain/User.java)
-* [UserRepository.java](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/repository/UserRepository.java)
 * [Woof.java](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/domain/Woof.java)
-* [WoofRepository.java](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/repository/WoofRepository.java)
 
 ---
 
@@ -88,11 +91,12 @@ annotation to your Sprint Boot application (either  `@EnableEurekaClient` or `@E
 
 [Feign](https://github.com/OpenFeign/feign) allows implementing **declarative REST clients** (i.e. through interfaces & annotations).
 
-It is used in `woofer-webfront` to implement the `woofer-backend` REST client. See:
+It is used in `woofer-webfront` to implement the `woofer-backend` REST client.
+
+See:
 
 * [UsersClient.java](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/clients/UsersClient.java)
 * [WoofsClient.java](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/clients/WoofsClient.java)
-
 
 ### Ribbon
 
@@ -110,6 +114,11 @@ to monitor and manage your application.
 Apart from default management endpoints, `woofer-webfront` and `woofer-backend` publish some business metrics to count active
 sessions, woofs and subscriptions.
 
+See:
+
+* [HomeController.java](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/mvc/HomeController.java)
+* [LoggedInUsersService.java](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/service/LoggedInUsersService.java)
+
 ---
 
 ## Spring REST Docs
@@ -117,6 +126,11 @@ sessions, woofs and subscriptions.
 [Spring REST Docs](https://projects.spring.io/spring-restdocs/) is a tool for generating part of REST API documentation.
 
 It is used in `woofer-backend` project to generate the reference API documentation.
+
+See:
+
+* [api-guide.adoc](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/asciidoc/api-guide.adoc)
+* [ApiDocumentation.java](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/test/java/com/orange/oswe/demo/woofer/backend/doc/ApiDocumentation.java)
 
 ---
 
