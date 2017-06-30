@@ -205,7 +205,12 @@ to adapt to several environments.</p>
 <hr />
 <h2 id="spring-data-jpa">Spring Data JPA</h2>
 <p><a href="http://projects.spring.io/spring-data-jpa/">Spring Data JPA</a> is used to implement our Object-Relational Mapping (ORM).</p>
-<p>It allows creating Data Access Objects (called <code>Respositories</code> in Spring terminology) simply by annotation and interfaces.</p>
+<p>It allows creating Data Access Objects (called <code>Respositories</code> in Spring terminology) simply by annotations and interfaces.</p>
+<p>See:</p>
+<ul>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/repository/UserRepository.java">UserRepository.java</a></li>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/repository/WoofRepository.java">WoofRepository.java</a></li>
+</ul>
 <hr />
 <h2 id="spring-data-rest">Spring Data Rest</h2>
 <p><a href="http://projects.spring.io/spring-data-rest/">Spring Data Rest</a> is used to build hypermedia-driven REST web services on 
@@ -215,9 +220,7 @@ feature.</p>
 <p>See:</p>
 <ul>
 <li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/domain/User.java">User.java</a></li>
-<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/repository/UserRepository.java">UserRepository.java</a></li>
 <li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/domain/Woof.java">Woof.java</a></li>
-<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/java/com/orange/oswe/demo/woofer/backend/repository/WoofRepository.java">WoofRepository.java</a></li>
 </ul>
 <hr />
 <h2 id="spring-cloud-netflix">Spring Cloud Netflix</h2>
@@ -230,7 +233,8 @@ a microservices architecture (<a href="https://spring.io/blog/2015/01/20/microse
 annotation to your Sprint Boot application (either  <code>@EnableEurekaClient</code> or <code>@EnableEurekaServer</code>).</p>
 <h3 id="feign">Feign</h3>
 <p><a href="https://github.com/OpenFeign/feign">Feign</a> allows implementing <strong>declarative REST clients</strong> (i.e. through interfaces &amp; annotations).</p>
-<p>It is used in <code>woofer-webfront</code> to implement the <code>woofer-backend</code> REST client. See:</p>
+<p>It is used in <code>woofer-webfront</code> to implement the <code>woofer-backend</code> REST client.</p>
+<p>See:</p>
 <ul>
 <li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/clients/UsersClient.java">UsersClient.java</a></li>
 <li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/clients/WoofsClient.java">WoofsClient.java</a></li>
@@ -244,10 +248,20 @@ annotation to your Sprint Boot application (either  <code>@EnableEurekaClient</c
 to monitor and manage your application.</p>
 <p>Apart from default management endpoints, <code>woofer-webfront</code> and <code>woofer-backend</code> publish some business metrics to count active
 sessions, woofs and subscriptions.</p>
+<p>See:</p>
+<ul>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/mvc/HomeController.java">HomeController.java</a></li>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/service/LoggedInUsersService.java">LoggedInUsersService.java</a></li>
+</ul>
 <hr />
 <h2 id="spring-rest-docs">Spring REST Docs</h2>
 <p><a href="https://projects.spring.io/spring-restdocs/">Spring REST Docs</a> is a tool for generating part of REST API documentation.</p>
 <p>It is used in <code>woofer-backend</code> project to generate the reference API documentation.</p>
+<p>See:</p>
+<ul>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/main/asciidoc/api-guide.adoc">api-guide.adoc</a></li>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-backend/src/test/java/com/orange/oswe/demo/woofer/backend/doc/ApiDocumentation.java">ApiDocumentation.java</a></li>
+</ul>
 <hr />
 <h2 id="spring-cloud-sleuth">Spring Cloud Sleuth</h2>
 <p><a href="https://cloud.spring.io/spring-cloud-sleuth/">Spring Cloud Sleuth</a> is used for distributed tracing &amp; logs correlation

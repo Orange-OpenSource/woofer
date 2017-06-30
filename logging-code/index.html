@@ -128,7 +128,7 @@
         
             <li><a href="#enrich-stack-traces-with-unique-signatures">Enrich stack traces with unique signatures</a></li>
         
-            <li><a href="#error-handling">Error handling</a></li>
+            <li><a href="#error-management">Error management</a></li>
         
             <li><a href="#shipping-logs-directly-to-logstash">Shipping logs directly to Logstash</a></li>
         
@@ -178,10 +178,10 @@ understand and follow the callflow and spot the root cause of an error.</p>
 <h2 id="enrich-stack-traces-with-unique-signatures">Enrich stack traces with unique signatures</h2>
 <p>The idea is to generate a short, unique ID that identifies your stack trace.</p>
 <p>It is an easy way to track the error from the client (UI and/or API) to your logs, count their frequency, make sure a problem has been fixed for good...</p>
-<p>This is done using the <code>CustomThrowableConverterWithHash</code> &amp; <code>StackHashJsonProvider</code> components from the <code>orange-mathoms-logging</code> library (<a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#stackTraceSign">see doc</a>).</p>
+<p>This is done using the <code>ShortenedThrowableConverter</code> &amp; <code>StackHashJsonProvider</code> components from the <code>logstash-logback-encoder</code> library (available from version <code>4.11</code>) (<a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#stackTraceSign">see doc</a>).</p>
 <hr />
-<h2 id="error-handling">Error handling</h2>
-<p>Error handling in a web application is undoubtedly a complex task. It covers several topics:</p>
+<h2 id="error-management">Error management</h2>
+<p>Error management in a web application is undoubtedly a complex task. It covers several topics:</p>
 <dl>
     <dt><strong>error mapping</strong></dt>
     <dd>
@@ -210,7 +210,7 @@ understand and follow the callflow and spot the root cause of an error.</p>
 <li>a human friendly message.</li>
 </ul>
 <p>NOTE: <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java">ErrorTranslator</a> manages most of internal Spring exceptions: you may perfectly reuse it in your own projects.</p>
-<h3 id="error-handling_1">Error handling</h3>
+<h3 id="error-handler">Error handler</h3>
 <p>The <em>error handler</em> is a technical component linked to the underlying framework in charge of handling Java exceptions (intercept, turn it into a HTTP error thanks to the <em>error mapping</em>, and display it to the client in an appropriate way).</p>
 <p>In Woofer, error handling is implemented by:</p>
 <ul>
@@ -251,21 +251,29 @@ simply displays some hints about the error (if you have started woofer locally, 
 logback is configured to ship directly application and access logs to <a href="https://www.elastic.co/products/logstash">Logstash</a> over TCP,
 using the amazing <a href="https://github.com/logstash/logstash-logback-encoder">logstash-logback-encoder</a> library.</p>
 <h3 id="configuration-for-java-logs">Configuration for Java logs</h3>
-<p>Logback configuration for Java logs also uses <code>CustomThrowableConverterWithHash</code> &amp; <code>StackHashJsonProvider</code> components
-from the <code>orange-mathoms-logging</code> library (<a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#stackTraceSign">see doc</a>)
+<p>Logback configuration for Java logs also uses <code>ShortenedThrowableConverter</code> &amp; <code>StackHashJsonProvider</code> components
+(<a href="https://github.com/Orange-OpenSource/orange-mathoms-logging#stackTraceSign">see doc</a>)
 to enrich stack traces with unique signatures.</p>
 <pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!-- application logging configuration to ship logs directly to Logstash --&gt;
-&lt;configuration debug=&quot;true&quot; scan=&quot;true&quot; scanPeriod=&quot;30 seconds&quot;&gt;
+&lt;configuration&gt;
+  &lt;!-- define exclusion patterns as a property --&gt;
+  &lt;property name=&quot;STE_EXCLUSIONS&quot; value=&quot;\$\$FastClassByCGLIB\$\$,\$\$EnhancerBySpringCGLIB\$\$,^sun\.reflect\..*\.invoke,^com\.sun\.,^sun\.net\.,^net\.sf\.cglib\.proxy\.MethodProxy\.invoke,^org\.springframework\.cglib\.,^org\.springframework\.transaction\.,^org\.springframework\.validation\.,^org\.springframework\.app\.,^org\.springframework\.aop\.,^java\.lang\.reflect\.Method\.invoke,^org\.springframework\.ws\..*\.invoke,^org\.springframework\.ws\.transport\.,^org\.springframework\.ws\.soap\.saaj\.SaajSoapMessage\.,^org\.springframework\.ws\.client\.core\.WebServiceTemplate\.,^org\.springframework\.web\.filter\.,^org\.springframework\.boot\.web\.filter\.,^org\.springframework\.util\.ReflectionUtils\.invokeMethod$,^org\.apache\.tomcat\.,^org\.apache\.catalina\.,^org\.apache\.coyote\.,^java\.util\.concurrent\.ThreadPoolExecutor\.runWorker,^java\.lang\.Thread\.run$,^rx\.&quot;/&gt;
+
   &lt;appender name=&quot;TCP&quot; class=&quot;net.logstash.logback.appender.LogstashTcpSocketAppender&quot;&gt;
     &lt;!-- remote Logstash server --&gt;
     &lt;remoteHost&gt;${LOGSTASH_HOST}&lt;/remoteHost&gt;
     &lt;port&gt;${LOGSTASH_PORT}&lt;/port&gt;
     &lt;encoder class=&quot;net.logstash.logback.encoder.LogstashEncoder&quot;&gt;
       &lt;!-- computes and adds a 'stack_hash' field on errors --&gt;
-      &lt;provider class=&quot;com.orange.common.logging.logback.StackHashJsonProvider&quot;/&gt;
+      &lt;provider class=&quot;net.logstash.logback.composite.loggingevent.StackHashJsonProvider&quot;&gt;
+        &lt;exclusions&gt;${STE_EXCLUSIONS}&lt;/exclusions&gt;
+      &lt;/provider&gt;
       &lt;!-- enriches the stack trace with unique hash --&gt;
-      &lt;throwableConverter class=&quot;com.orange.common.logging.logback.CustomThrowableConverterWithHash&quot; /&gt;
+      &lt;throwableConverter class=&quot;net.logstash.logback.stacktrace.ShortenedThrowableConverter&quot;&gt;
+        &lt;inlineHash&gt;true&lt;/inlineHash&gt;
+        &lt;exclusions&gt;${STE_EXCLUSIONS}&lt;/exclusions&gt;
+      &lt;/throwableConverter&gt;
       &lt;customFields&gt;{&quot;@project&quot;:&quot;${MD_PROJECT:--}&quot;,&quot;@app&quot;:&quot;webfront&quot;,&quot;@type&quot;:&quot;java&quot;}&lt;/customFields&gt;
     &lt;/encoder&gt;
   &lt;/appender&gt;
@@ -361,7 +369,7 @@ to enrich stack traces with unique signatures.</p>
 </tr>
 <tr>
 <td><code>stack_trace</code></td>
-<td>set by Logback, content valuated by the <code>CustomThrowableConverterWithHash</code> component</td>
+<td>set by Logback, content valuated by the <code>ShortenedThrowableConverter</code> component</td>
 </tr>
 <tr>
 <td><code>stack_hash</code></td>
@@ -399,7 +407,7 @@ class by adding the <a href="http://logback.qos.ch/apidocs/ch/qos/logback/access
 <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html">profile</a>:</p>
 <pre><code class="xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!-- access log configuration to ship logs directly to Logstash --&gt;
-&lt;configuration debug=&quot;true&quot; scan=&quot;false&quot; scanPeriod=&quot;30 seconds&quot;&gt;
+&lt;configuration&gt;
   &lt;statusListener class=&quot;ch.qos.logback.core.status.OnConsoleStatusListener&quot; /&gt;
 
   &lt;!-- TCP --&gt;
