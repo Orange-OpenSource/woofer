@@ -160,73 +160,23 @@ to enrich stack traces with unique signatures.
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- application logging configuration to ship logs directly to Logstash -->
 <configuration>
+  <!-- define exclusion patterns as a property -->
+  <property name="STE_EXCLUSIONS" value="\$\$FastClassByCGLIB\$\$,\$\$EnhancerBySpringCGLIB\$\$,^sun\.reflect\..*\.invoke,^com\.sun\.,^sun\.net\.,^net\.sf\.cglib\.proxy\.MethodProxy\.invoke,^org\.springframework\.cglib\.,^org\.springframework\.transaction\.,^org\.springframework\.validation\.,^org\.springframework\.app\.,^org\.springframework\.aop\.,^java\.lang\.reflect\.Method\.invoke,^org\.springframework\.ws\..*\.invoke,^org\.springframework\.ws\.transport\.,^org\.springframework\.ws\.soap\.saaj\.SaajSoapMessage\.,^org\.springframework\.ws\.client\.core\.WebServiceTemplate\.,^org\.springframework\.web\.filter\.,^org\.springframework\.boot\.web\.filter\.,^org\.springframework\.util\.ReflectionUtils\.invokeMethod$,^org\.apache\.tomcat\.,^org\.apache\.catalina\.,^org\.apache\.coyote\.,^java\.util\.concurrent\.ThreadPoolExecutor\.runWorker,^java\.lang\.Thread\.run$,^rx\."/>
+  
   <appender name="TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
     <!-- remote Logstash server -->
     <remoteHost>${LOGSTASH_HOST}</remoteHost>
     <port>${LOGSTASH_PORT}</port>
     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-        <!-- computes and adds a 'stack_hash' field on errors -->
-        <provider class="net.logstash.logback.composite.loggingevent.StackHashJsonProvider">
-            <!-- generated class names -->
-            <exclude>\$\$FastClassByCGLIB\$\$</exclude>
-            <exclude>\$\$EnhancerBySpringCGLIB\$\$</exclude>
-            <exclude>^sun\.reflect\..*\.invoke</exclude>
-            <!-- JDK internals -->
-            <exclude>^com\.sun\.</exclude>
-            <exclude>^sun\.net\.</exclude>
-            <!-- dynamic invocation -->
-            <exclude>^net\.sf\.cglib\.proxy\.MethodProxy\.invoke</exclude>
-            <exclude>^org\.springframework\.cglib\.</exclude>
-            <exclude>^org\.springframework\.transaction\.</exclude>
-            <exclude>^org\.springframework\.validation\.</exclude>
-            <exclude>^org\.springframework\.app\.</exclude>
-            <exclude>^org\.springframework\.aop\.</exclude>
-            <exclude>^java\.lang\.reflect\.Method\.invoke</exclude>
-            <!-- Spring plumbing -->
-            <exclude>^org\.springframework\.ws\..*\.invoke</exclude>
-            <exclude>^org\.springframework\.ws\.transport\.</exclude>
-            <exclude>^org\.springframework\.ws\.soap\.saaj\.SaajSoapMessage\.</exclude>
-            <exclude>^org\.springframework\.ws\.client\.core\.WebServiceTemplate\.</exclude>
-            <exclude>^org\.springframework\.web\.filter\.</exclude>
-            <!-- Tomcat internals -->
-            <exclude>^org\.apache\.tomcat\.</exclude>
-            <exclude>^org\.apache\.catalina\.</exclude>
-            <exclude>^org\.apache\.coyote\.</exclude>
-            <exclude>^java\.util\.concurrent\.ThreadPoolExecutor\.runWorker</exclude>
-            <exclude>^java\.lang\.Thread\.run$</exclude>
-        </provider>
-        <!-- enriches the stack trace with unique hash -->
-        <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-            <!-- computes and inlines stack hash -->
-            <inlineHash>true</inlineHash>
-            <!-- generated class names -->
-            <exclude>\$\$FastClassByCGLIB\$\$</exclude>
-            <exclude>\$\$EnhancerBySpringCGLIB\$\$</exclude>
-            <exclude>^sun\.reflect\..*\.invoke</exclude>
-            <!-- JDK internals -->
-            <exclude>^com\.sun\.</exclude>
-            <exclude>^sun\.net\.</exclude>
-            <!-- dynamic invocation -->
-            <exclude>^net\.sf\.cglib\.proxy\.MethodProxy\.invoke</exclude>
-            <exclude>^org\.springframework\.cglib\.</exclude>
-            <exclude>^org\.springframework\.transaction\.</exclude>
-            <exclude>^org\.springframework\.validation\.</exclude>
-            <exclude>^org\.springframework\.app\.</exclude>
-            <exclude>^org\.springframework\.aop\.</exclude>
-            <exclude>^java\.lang\.reflect\.Method\.invoke</exclude>
-            <!-- Spring plumbing -->
-            <exclude>^org\.springframework\.ws\..*\.invoke</exclude>
-            <exclude>^org\.springframework\.ws\.transport\.</exclude>
-            <exclude>^org\.springframework\.ws\.soap\.saaj\.SaajSoapMessage\.</exclude>
-            <exclude>^org\.springframework\.ws\.client\.core\.WebServiceTemplate\.</exclude>
-            <exclude>^org\.springframework\.web\.filter\.</exclude>
-            <!-- Tomcat internals -->
-            <exclude>^org\.apache\.tomcat\.</exclude>
-            <exclude>^org\.apache\.catalina\.</exclude>
-            <exclude>^org\.apache\.coyote\.</exclude>
-            <exclude>^java\.util\.concurrent\.ThreadPoolExecutor\.runWorker</exclude>
-            <exclude>^java\.lang\.Thread\.run$</exclude>
-        </throwableConverter>
+      <!-- computes and adds a 'stack_hash' field on errors -->
+      <provider class="net.logstash.logback.composite.loggingevent.StackHashJsonProvider">
+        <exclusions>${STE_EXCLUSIONS}</exclusions>
+      </provider>
+      <!-- enriches the stack trace with unique hash -->
+      <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+        <inlineHash>true</inlineHash>
+        <exclusions>${STE_EXCLUSIONS}</exclusions>
+      </throwableConverter>
       <customFields>{"@project":"${MD_PROJECT:--}","@app":"webfront","@type":"java"}</customFields>
     </encoder>
   </appender>
