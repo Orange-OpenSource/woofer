@@ -7,6 +7,8 @@
  */
 package com.orange.oswe.demo.woofer.backend;
 
+import net.logstash.logback.stacktrace.StackElementFilter;
+import net.logstash.logback.stacktrace.StackHasher;
 import com.orange.oswe.demo.woofer.commons.error.JsonErrorDecoder;
 import com.orange.oswe.demo.woofer.commons.error.RestErrorController;
 import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
@@ -26,6 +28,11 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jmx.export.MBeanExporter;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * The Woofer backend service
@@ -66,11 +73,21 @@ public class BackendApp {
 	}
 
 	/**
+	 * {@link StackHasher} used in Logback config (required by {@link ErrorController})
+	 * @param comaSeparatedPatterns list of coma separated patterns
+	 */
+	@Bean
+	public StackHasher throwableHasher(@Value("${custom.logging.ste_exclusions}") String comaSeparatedPatterns) {
+		List<Pattern> excludes = Arrays.stream(comaSeparatedPatterns.split("\\s*\\,\\s*")).map(Pattern::compile).collect(Collectors.toList());
+		return new StackHasher(StackElementFilter.byPattern(excludes));
+	}
+
+	/**
 	 * Override default Spring Boot {@link ErrorController} with ours
 	 */
 	@Bean
-	public ErrorController errorController() {
-		return new RestErrorController();
+	public ErrorController errorController(StackHasher hasher) {
+		return new RestErrorController(hasher);
 	}
 
 	/**

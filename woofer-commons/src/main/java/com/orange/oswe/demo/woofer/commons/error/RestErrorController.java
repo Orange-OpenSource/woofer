@@ -7,12 +7,7 @@
  */
 package com.orange.oswe.demo.woofer.commons.error;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Deque;
-
-import com.orange.common.logging.utils.ErrorSignature;
+import net.logstash.logback.stacktrace.StackHasher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.web.ErrorController;
@@ -26,6 +21,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Deque;
 
 /**
  * Generic error controller handling Rest errors
@@ -45,6 +45,16 @@ public class RestErrorController implements ErrorController, HandlerExceptionRes
     protected static final String ERROR_UNIQUE_ID_HEADER = "X-Error-Uid";
 
 	protected static final String PATH = "/error";
+
+	protected final StackHasher hasher;
+
+	/**
+	 * Constructor
+	 * @param hasher hasher to use to compute internal error hash
+	 */
+	public RestErrorController(StackHasher hasher) {
+		this.hasher = hasher;
+	}
 
 	@Override
 	public String getErrorPath() {
@@ -135,7 +145,7 @@ public class RestErrorController implements ErrorController, HandlerExceptionRes
 			reqUrl = errUri;
 		}
 		// add an error hash to returned headers and message to retrieve easily from logs
-		Deque<String> errHashes = ErrorSignature.hexHashes(throwable);
+		Deque<String> errHashes = hasher.hexHashes(throwable);
 		String topHash = errHashes.peek();
 
 		// add an error hash to returned headers and message to retrieve easily from logs

@@ -18,6 +18,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <logback-version>1.2.3</logback-version>
     </properties>
 
     <modules>
@@ -31,11 +32,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.orange.oswe.demo</groupId>
-                <artifactId>woofer-commons</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>Dalston.RELEASE</version>
@@ -43,9 +39,35 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>com.orange.oswe.demo</groupId>
+                <artifactId>woofer-commons</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.orange.common</groupId>
                 <artifactId>orange-mathoms-logging</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.2</version>
+            </dependency>
+            <!-- the version with stack hash feature -->
+            <dependency>
+                <groupId>net.logstash.logback</groupId>
+                <artifactId>logstash-logback-encoder</artifactId>
+                <version>4.11</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-access</artifactId>
+                <version>${logback-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

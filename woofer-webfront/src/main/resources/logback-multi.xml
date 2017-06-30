@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- application logging configuration to ship logs to 3 systems -->
-<configuration debug="true" scan="true" scanPeriod="30 seconds">
+<configuration>
+	<!-- import Logback base config -->
+	<include resource="logback-base.xml" />
 
-    <!-- (private) Logstash -->
+	<!-- (private) Logstash -->
     <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
     	<remoteHost>${LOGSTASH_HOST}</remoteHost>
         <port>${LOGSTASH_PORT}</port>
 		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
-			<provider class="com.orange.common.logging.logback.StackHashJsonProvider"/>
-	        <throwableConverter class="com.orange.common.logging.logback.CustomThrowableConverterWithHash" />
+			<!-- computes and adds a 'stack_hash' field on errors -->
+			<provider class="net.logstash.logback.composite.loggingevent.StackHashJsonProvider">
+				<exclusions>${STE_EXCLUSIONS}</exclusions>
+			</provider>
+			<!-- enriches the stack trace with unique hash -->
+			<throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+				<inlineHash>true</inlineHash>
+				<exclusions>${STE_EXCLUSIONS}</exclusions>
+			</throwableConverter>
 	        <customFields>{"@app":"webfront","@type":"java"}</customFields>
 		</encoder>
     </appender>
@@ -18,8 +27,15 @@
     	<remoteHost>${LOGAAS_HOST}</remoteHost>
         <port>${LOGAAS_PORT}</port>
 		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
-			<provider class="com.orange.common.logging.logback.StackHashJsonProvider"/>
-			<throwableConverter class="com.orange.common.logging.logback.CustomThrowableConverterWithHash" />
+			<!-- computes and adds a 'stack_hash' field on errors -->
+			<provider class="net.logstash.logback.composite.loggingevent.StackHashJsonProvider">
+				<exclusions>${STE_EXCLUSIONS}</exclusions>
+			</provider>
+			<!-- enriches the stack trace with unique hash -->
+			<throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+				<inlineHash>true</inlineHash>
+				<exclusions>${STE_EXCLUSIONS}</exclusions>
+			</throwableConverter>
 			<customFields>{"@project":"${MD_PROJECT:--}","@app":"webfront","@type":"java"}</customFields>
 		</encoder>
 	</appender>
@@ -33,7 +49,11 @@
 		<program>woofer</program>
 		<product>webfront</product>
 		<logfile>java</logfile>
-		<throwableConverter class="com.orange.common.logging.logback.CustomThrowableConverterWithHash" />
+		<!-- enriches the stack trace with unique hash -->
+		<throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+			<inlineHash>true</inlineHash>
+			<exclusions>${STE_EXCLUSIONS}</exclusions>
+		</throwableConverter>
 	</appender>
 
 	<logger name="com.orange" level="DEBUG" />

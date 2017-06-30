@@ -31,6 +31,16 @@
 			<artifactId>logback-access</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
+		</dependency>
+		<dependency>
 			<groupId>com.orange.common</groupId>
 			<artifactId>orange-mathoms-logging</artifactId>
 		</dependency>

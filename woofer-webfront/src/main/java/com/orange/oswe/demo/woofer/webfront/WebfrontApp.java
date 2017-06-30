@@ -7,15 +7,14 @@
  */
 package com.orange.oswe.demo.woofer.webfront;
 
-import javax.servlet.Filter;
-import java.security.NoSuchAlgorithmException;
-
 import com.orange.common.logging.web.PrincipalFilter;
 import com.orange.common.logging.web.SessionIdFilter;
 import com.orange.oswe.demo.woofer.commons.error.JsonErrorDecoder;
 import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
 import feign.Contract;
 import feign.codec.ErrorDecoder;
+import net.logstash.logback.stacktrace.StackElementFilter;
+import net.logstash.logback.stacktrace.StackHasher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.ExportMetricWriter;
@@ -30,6 +29,13 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.servlet.Filter;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * The Woofer webfront application
@@ -97,5 +103,15 @@ public class WebfrontApp {
 	@Bean
 	public ErrorDecoder errorDecoder() {
 		return new JsonErrorDecoder();
+	}
+
+	/**
+	 * {@link StackHasher} used in Logback config
+	 * @param comaSeparatedPatterns list of coma separated patterns
+	 */
+	@Bean
+	public StackHasher throwableHasher(@Value("${custom.logging.ste_exclusions}") String comaSeparatedPatterns) {
+		List<Pattern> excludes = Arrays.stream(comaSeparatedPatterns.split("\\s*\\,\\s*")).map(Pattern::compile).collect(Collectors.toList());
+		return new StackHasher(StackElementFilter.byPattern(excludes));
 	}
 }

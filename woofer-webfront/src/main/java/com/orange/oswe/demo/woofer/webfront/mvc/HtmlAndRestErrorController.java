@@ -1,24 +1,34 @@
 package com.orange.oswe.demo.woofer.webfront.mvc;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import com.orange.oswe.demo.woofer.commons.error.ErrorCode;
 import com.orange.oswe.demo.woofer.commons.error.JsonError;
 import com.orange.oswe.demo.woofer.commons.error.RestErrorController;
+import net.logstash.logback.stacktrace.StackHasher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * error controller handling both rest and html clients
  */
 @Controller
 public class HtmlAndRestErrorController extends RestErrorController {
+
+	/**
+	 * Constructor
+	 *
+	 * @param hasher hasher to use to compute internal error hash
+	 */
+	public HtmlAndRestErrorController(StackHasher hasher) {
+		super(hasher);
+	}
 
 	/**
 	 * Html error handling

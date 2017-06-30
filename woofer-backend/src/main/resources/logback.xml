@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- application logging default configuration: STDOUT -->
-<configuration debug="true" scan="false" scanPeriod="30 seconds">
-	<!-- using the CustomThrowableConverterWithHash with mostly any logback appender -->
-	<!-- 1: define "%sEx" as a conversion rule involving -->
-	<conversionRule conversionWord="sEx" converterClass="com.orange.common.logging.logback.CustomThrowableConverterWithHash" />
+<configuration>
+	<!-- import Logback base config -->
+	<include resource="logback-base.xml" />
+
+	<!-- define "%sEx" as a conversion rule involving ShortenedThrowableConverter -->
+	<conversionRule conversionWord="sEx" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
  		<layout class="ch.qos.logback.classic.PatternLayout">
- 			<!-- 2: use the "%sEx" rule in the layout pattern -->
-			<Pattern>%yellow(JAVA&gt;) %boldWhite(%d{HH:mm:ss.SSS}) %highlight(%-5level) [traceId:%X{X-B3-TraceId:--}|parentSpan:%X{X-B3-ParentSpanId}|span:%X{X-B3-SpanId}] %cyan(%logger) - %msg%n%sEx</Pattern>
+			<Pattern>%yellow(JAVA&gt;) %boldWhite(%d{HH:mm:ss.SSS}) %highlight(%-5level) [traceId:%X{X-B3-TraceId:--}|parentSpan:%X{X-B3-ParentSpanId}|span:%X{X-B3-SpanId}] %cyan(%logger) - %msg%n%sEx{full,full,full,${STE_EXCLUSIONS}}</Pattern>
 		</layout>
-		<!-- rest of your config ... -->
 	</appender>
 	
-	<!-- rest of your config ... -->
 	<logger name="com.orange" level="DEBUG" />
 
 	<root level="INFO">

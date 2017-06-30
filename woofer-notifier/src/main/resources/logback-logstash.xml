@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- application logging configuration to ship logs directly to Logstash -->
-<configuration debug="true" scan="true" scanPeriod="30 seconds">
-    <appender name="TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+<configuration>
+	<!-- import Logback base config -->
+	<include resource="logback-base.xml" />
+
+	<appender name="TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
     	<!-- remote Logstash server -->
     	<remoteHost>${LOGSTASH_HOST}</remoteHost>
         <port>${LOGSTASH_PORT}</port>
 		<encoder class="net.logstash.logback.encoder.LogstashEncoder">
 			<!-- computes and adds a 'stack_hash' field on errors -->
-			<provider class="com.orange.common.logging.logback.StackHashJsonProvider"/>
+			<provider class="net.logstash.logback.composite.loggingevent.StackHashJsonProvider">
+				<exclusions>${STE_EXCLUSIONS}</exclusions>
+			</provider>
 			<!-- enriches the stack trace with unique hash -->
-	        <throwableConverter class="com.orange.common.logging.logback.CustomThrowableConverterWithHash" />
+			<throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+				<inlineHash>true</inlineHash>
+				<exclusions>${STE_EXCLUSIONS}</exclusions>
+			</throwableConverter>
 	        <customFields>{"@project":"${MD_PROJECT:--}","@app":"notifier","@type":"java"}</customFields>
 		</encoder>
     </appender>
