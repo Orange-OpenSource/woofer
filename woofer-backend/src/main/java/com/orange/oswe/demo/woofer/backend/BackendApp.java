@@ -7,13 +7,13 @@
  */
 package com.orange.oswe.demo.woofer.backend;
 
-import net.logstash.logback.stacktrace.StackElementFilter;
-import net.logstash.logback.stacktrace.StackHasher;
-import com.orange.oswe.demo.woofer.commons.error.JsonErrorDecoder;
-import com.orange.oswe.demo.woofer.commons.error.RestErrorController;
+import com.orange.oswe.demo.woofer.commons.error.RestErrorDecoder;
+import com.orange.oswe.demo.woofer.commons.error.RestErrorHandler;
 import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
 import feign.Contract;
 import feign.codec.ErrorDecoder;
+import net.logstash.logback.stacktrace.StackElementFilter;
+import net.logstash.logback.stacktrace.StackHasher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.ExportMetricWriter;
@@ -86,8 +86,8 @@ public class BackendApp {
 	 * Override default Spring Boot {@link ErrorController} with ours
 	 */
 	@Bean
-	public ErrorController errorController(StackHasher hasher) {
-		return new RestErrorController(hasher);
+	public RestErrorHandler errorHandler(StackHasher hasher) {
+		return new RestErrorHandler(hasher);
 	}
 
 	/**
@@ -95,6 +95,6 @@ public class BackendApp {
 	 */
 	@Bean
 	public ErrorDecoder errorDecoder() {
-		return new JsonErrorDecoder();
+		return new RestErrorDecoder();
 	}
 }

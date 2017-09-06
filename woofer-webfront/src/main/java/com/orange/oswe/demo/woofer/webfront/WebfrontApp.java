@@ -9,7 +9,7 @@ package com.orange.oswe.demo.woofer.webfront;
 
 import com.orange.common.logging.web.PrincipalFilter;
 import com.orange.common.logging.web.SessionIdFilter;
-import com.orange.oswe.demo.woofer.commons.error.JsonErrorDecoder;
+import com.orange.oswe.demo.woofer.commons.error.RestErrorDecoder;
 import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
 import feign.Contract;
 import feign.codec.ErrorDecoder;
@@ -102,7 +102,7 @@ public class WebfrontApp {
 	 */
 	@Bean
 	public ErrorDecoder errorDecoder() {
-		return new JsonErrorDecoder();
+		return new RestErrorDecoder();
 	}
 
 	/**

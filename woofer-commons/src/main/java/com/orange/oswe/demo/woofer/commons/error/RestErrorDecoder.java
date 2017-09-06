@@ -1,36 +1,34 @@
 package com.orange.oswe.demo.woofer.commons.error;
 
-import static java.lang.String.format;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import org.springframework.http.HttpStatus;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
 /**
- * Feign {@link ErrorDecoder decoder} of Http error responses with an array of {@link JsonError} as body
+ * Feign {@link ErrorDecoder decoder} of Http error responses with an array of {@link RestError} as body
  */
-public class JsonErrorDecoder implements ErrorDecoder {
+public class RestErrorDecoder implements ErrorDecoder {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public Exception decode(String methodKey, Response response) {
-        String message = format("status %s reading %s", response.status(), methodKey);
-        List<JsonError> errors = null;
+        String message = String.format("status %d reading %s", response.status(), methodKey);
+        List<RestError> errors = null;
         if(response.body() != null) {
             try {
-                JsonError[] arrayOfErrors = mapper.readValue(response.body().asReader(), JsonError[].class);
+                RestError[] arrayOfErrors = mapper.readValue(response.body().asReader(), RestError[].class);
                 if (arrayOfErrors != null && arrayOfErrors.length > 0) {
                     errors = Arrays.asList(arrayOfErrors);
                 }
             } catch (IOException e) {
             }
         }
-        return new HttpException(HttpStatus.valueOf(response.status()), message, errors);
+        return new RestException(HttpStatus.valueOf(response.status()), message, errors);
     }
 }

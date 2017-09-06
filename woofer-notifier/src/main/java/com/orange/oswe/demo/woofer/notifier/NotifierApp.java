@@ -7,7 +7,7 @@
  */
 package com.orange.oswe.demo.woofer.notifier;
 
-import com.orange.oswe.demo.woofer.commons.error.RestErrorController;
+import com.orange.oswe.demo.woofer.commons.error.RestErrorHandler;
 import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
 import net.logstash.logback.stacktrace.StackElementFilter;
 import net.logstash.logback.stacktrace.StackHasher;
@@ -73,7 +73,7 @@ public class NotifierApp {
 	 * Override default Spring Boot {@link ErrorController} with ours
 	 */
 	@Bean
-	public ErrorController errorController(StackHasher hasher) {
-		return new RestErrorController(hasher);
+	public RestErrorHandler errorHandler(StackHasher hasher) {
+		return new RestErrorHandler(hasher);
 	}
 }

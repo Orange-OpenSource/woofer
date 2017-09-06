@@ -68,7 +68,7 @@ This is done using the `ShortenedThrowableConverter` & `StackHashJsonProvider` c
 Error management in a web application is undoubtedly a complex task. It covers several topics:
 
 <dl>
-    <dt><strong>error mapping</strong></dt>
+    <dt><strong>error to http mapping</strong></dt>
     <dd>
         How each Java error should be mapped to HTTP error? Which status code? Which (human readable) message?
         Generally speaking, you'll have to deal both with your own Java exceptions, and also errors from the underlying framework (Spring or else).
@@ -87,29 +87,22 @@ Error management in a web application is undoubtedly a complex task. It covers s
 </dl>
 
 
-### Error mapping
+### Error handlers in Woofer
 
-As explained above, *error mapping* is the action of translating Java exceptions into HTTP errors (status, code & human readable message).
-
-In Woofer, this is handled by the [ErrorTranslator](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java), that translates any Java exception into a [JsonError](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/JsonError.java), a structure with:
-
-* an HTTP status,
-* an error code (based on [common Orange Partner error codes](https://developer.orange.com/apis/authentication-fr/api-reference#errors)),
-* a human friendly message.
-
-NOTE: [ErrorTranslator](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java) manages most of internal Spring exceptions: you may perfectly reuse it in your own projects.
-
-
-### Error handler
-
-The *error handler* is a technical component linked to the underlying framework in charge of handling Java exceptions (intercept, turn it into a HTTP error thanks to the *error mapping*, and display it to the client in an appropriate way).
+The *error handler* is a technical component linked to the underlying framework in charge of handling Java exceptions (intercept, turn it into a HTTP error, and display it to the client in an appropriate way).
 
 In Woofer, error handling is implemented by:
 
-* [RestErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/RestErrorController.java) for basic Rest error handling (JSON),
-* [HtmlAndRestErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/mvc/HtmlAndRestErrorController.java) 
-  that extends [RestErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/RestErrorController.java)
-  and adds support for html rendering.
+* [AbstractGlobalErrorHandler](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/AbstractGlobalErrorHandler.java): an abstract error handler that:
+     * globally intercepts any unhandled [Spring MVC Exceptions](https://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html#mvc-ann-rest-spring-mvc-exceptions),
+     * exposes a global exception rendering endpoint,
+     * that can be registered at the JEE container level and therefore is able to render non-Spring MVC errors (Spring Security or else),
+     * maps any exception (Spring MVC or else) to:
+        * an HTTP status,
+        * an error code (based on [common Orange Partner error codes](https://developer.orange.com/apis/authentication-fr/api-reference#errors)),
+        * a human-understandable error description.
+* [RestErrorHandler](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/RestErrorHandler.java): implementation that renders errors into JSON,
+* [RestAndHtmlErrorHandler](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/mvc/RestAndHtmlErrorHandler.java): an implementation that supports both JSON and html rendering (using content negotiation).
 
 Both behave quite differently if the error is a **client** error or an **internal** (server) error.
 
@@ -124,7 +117,7 @@ A server error (HTTP `5XX`) - on the contrary - is due to an internal issue (a b
 * log the original Java error with full details to allow further analysis and maybe raise an alarm in production,
 * be able to have error traceability (see below).
 
-That's what [RestErrorController](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/RestErrorController.java) does in case of internal errors:
+That's what [AbstractGlobalErrorHandler](https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/AbstractGlobalErrorHandler.java) does in case of internal errors:
 
 1. generates a unique error ID,
 2. adds this ID to the response headers (`X-Error-Uid`),
@@ -137,10 +130,10 @@ The unique error ID (displayed to the user) can then be used to retrieve the com
 NOTE: Spring supports [lots of ways of managing exceptions](https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc) 
 (probably too many). I chose to implement it with:
 
-* `HandlerExceptionResolver`: to intercept exceptions and forward to the error controller,
-* `ErrorController`: declares the component as the controller in charge of rendering the error.
+* `@ControllerAdvice` + `@ExceptionHandler`: to globally intercept any unhandled Spring MVC exception,
+* `ErrorController`: declares the component as the controller in charge of rendering any error at the JEE container level.
 
-Pretty hard to tell if this implementation is academic or not, but - well - it works fine.
+This is the design that suits the best my needs (render ALL errors, including non-Spring MVC, and manage content negotiation).
 
 ---
 
