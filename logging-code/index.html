@@ -183,7 +183,7 @@ understand and follow the callflow and spot the root cause of an error.</p>
 <h2 id="error-management">Error management</h2>
 <p>Error management in a web application is undoubtedly a complex task. It covers several topics:</p>
 <dl>
-    <dt><strong>error mapping</strong></dt>
+    <dt><strong>error to http mapping</strong></dt>
     <dd>
         How each Java error should be mapped to HTTP error? Which status code? Which (human readable) message?
         Generally speaking, you'll have to deal both with your own Java exceptions, and also errors from the underlying framework (Spring or else).
@@ -201,23 +201,24 @@ understand and follow the callflow and spot the root cause of an error.</p>
     </dd>
 </dl>
 
-<h3 id="error-mapping">Error mapping</h3>
-<p>As explained above, <em>error mapping</em> is the action of translating Java exceptions into HTTP errors (status, code &amp; human readable message).</p>
-<p>In Woofer, this is handled by the <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java">ErrorTranslator</a>, that translates any Java exception into a <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/JsonError.java">JsonError</a>, a structure with:</p>
-<ul>
-<li>an HTTP status,</li>
-<li>an error code (based on <a href="https://developer.orange.com/apis/authentication-fr/api-reference#errors">common Orange Partner error codes</a>),</li>
-<li>a human friendly message.</li>
-</ul>
-<p>NOTE: <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/ErrorTranslator.java">ErrorTranslator</a> manages most of internal Spring exceptions: you may perfectly reuse it in your own projects.</p>
-<h3 id="error-handler">Error handler</h3>
-<p>The <em>error handler</em> is a technical component linked to the underlying framework in charge of handling Java exceptions (intercept, turn it into a HTTP error thanks to the <em>error mapping</em>, and display it to the client in an appropriate way).</p>
+<h3 id="error-handlers-in-woofer">Error handlers in Woofer</h3>
+<p>The <em>error handler</em> is a technical component linked to the underlying framework in charge of handling Java exceptions (intercept, turn it into a HTTP error, and display it to the client in an appropriate way).</p>
 <p>In Woofer, error handling is implemented by:</p>
 <ul>
-<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/RestErrorController.java">RestErrorController</a> for basic Rest error handling (JSON),</li>
-<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/mvc/HtmlAndRestErrorController.java">HtmlAndRestErrorController</a> 
-  that extends <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/RestErrorController.java">RestErrorController</a>
-  and adds support for html rendering.</li>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/AbstractGlobalErrorHandler.java">AbstractGlobalErrorHandler</a>: an abstract error handler that:<ul>
+<li>globally intercepts any unhandled <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html#mvc-ann-rest-spring-mvc-exceptions">Spring MVC Exceptions</a>,</li>
+<li>exposes a global exception rendering endpoint,</li>
+<li>that can be registered at the JEE container level and therefore is able to render non-Spring MVC errors (Spring Security or else),</li>
+<li>maps any exception (Spring MVC or else) to:<ul>
+<li>an HTTP status,</li>
+<li>an error code (based on <a href="https://developer.orange.com/apis/authentication-fr/api-reference#errors">common Orange Partner error codes</a>),</li>
+<li>a human-understandable error description.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/RestErrorHandler.java">RestErrorHandler</a>: implementation that renders errors into JSON,</li>
+<li><a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-webfront/src/main/java/com/orange/oswe/demo/woofer/webfront/mvc/RestAndHtmlErrorHandler.java">RestAndHtmlErrorHandler</a>: an implementation that supports both JSON and html rendering (using content negotiation).</li>
 </ul>
 <p>Both behave quite differently if the error is a <strong>client</strong> error or an <strong>internal</strong> (server) error.</p>
 <p>A client error (HTTP <code>4XX</code>) is supposed to be due to a wrong usage of the API or application by the user. The error handler 
@@ -230,7 +231,7 @@ simply displays some hints about the error (if you have started woofer locally, 
 <li>log the original Java error with full details to allow further analysis and maybe raise an alarm in production,</li>
 <li>be able to have error traceability (see below).</li>
 </ul>
-<p>That's what <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/RestErrorController.java">RestErrorController</a> does in case of internal errors:</p>
+<p>That's what <a href="https://github.com/Orange-OpenSource/woofer/blob/master/woofer-commons/src/main/java/com/orange/oswe/demo/woofer/commons/error/AbstractGlobalErrorHandler.java">AbstractGlobalErrorHandler</a> does in case of internal errors:</p>
 <ol>
 <li>generates a unique error ID,</li>
 <li>adds this ID to the response headers (<code>X-Error-Uid</code>),</li>
@@ -241,10 +242,10 @@ simply displays some hints about the error (if you have started woofer locally, 
 <p>NOTE: Spring supports <a href="https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc">lots of ways of managing exceptions</a> 
 (probably too many). I chose to implement it with:</p>
 <ul>
-<li><code>HandlerExceptionResolver</code>: to intercept exceptions and forward to the error controller,</li>
-<li><code>ErrorController</code>: declares the component as the controller in charge of rendering the error.</li>
+<li><code>@ControllerAdvice</code> + <code>@ExceptionHandler</code>: to globally intercept any unhandled Spring MVC exception,</li>
+<li><code>ErrorController</code>: declares the component as the controller in charge of rendering any error at the JEE container level.</li>
 </ul>
-<p>Pretty hard to tell if this implementation is academic or not, but - well - it works fine.</p>
+<p>This is the design that suits the best my needs (render ALL errors, including non-Spring MVC, and manage content negotiation).</p>
 <hr />
 <h2 id="shipping-logs-directly-to-logstash">Shipping logs directly to Logstash</h2>
 <p>Using the <strong>logstash</strong> <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html">profile</a>,
