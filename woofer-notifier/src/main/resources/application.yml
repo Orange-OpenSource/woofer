@@ -8,7 +8,7 @@
 # ----------------------------------------
 spring:
   application:
-    name: notifier
+    name: woofer-notifier
   jpa:
     show-sql: false
   # Zipkin

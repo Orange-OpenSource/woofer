@@ -8,7 +8,7 @@
 # ----------------------------------------
 spring:
   application:
-    name: webfront
+    name: woofer-webfront
   # INTERNATIONALIZATION
   messages:
     basename: messages/messages

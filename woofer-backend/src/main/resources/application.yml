@@ -8,7 +8,7 @@
 # ----------------------------------------
 spring:
   application:
-    name: backend
+    name: woofer-backend
   jpa:
     show-sql: false
   # DATASOURCE
