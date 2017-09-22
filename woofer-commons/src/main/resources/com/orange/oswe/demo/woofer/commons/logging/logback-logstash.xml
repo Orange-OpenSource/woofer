@@ -2,7 +2,10 @@
 <!-- application logging configuration to ship logs directly to Logstash -->
 <configuration>
 	<!-- import Logback base config -->
-	<include resource="logback-base.xml" />
+	<include resource="com/orange/oswe/demo/woofer/commons/logging/logback-base.xml" />
+
+	<!-- import app name from Spring Boot properties -->
+	<springProperty name="app.name" source="spring.application.name"/>
 
 	<appender name="TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
     	<!-- remote Logstash server -->
@@ -18,11 +21,9 @@
 				<inlineHash>true</inlineHash>
 				<exclusions>${STE_EXCLUSIONS}</exclusions>
 			</throwableConverter>
-	        <customFields>{"@project":"${MD_PROJECT:--}","@app":"backend","@type":"java"}</customFields>
+	        <customFields>{"@project":"${MD_PROJECT:--}","@app":"${app.name}","@type":"java"}</customFields>
 		</encoder>
     </appender>
-	
-	<logger name="com.orange" level="DEBUG" />
 	
 	<root level="INFO">
 		<appender-ref ref="TCP" />

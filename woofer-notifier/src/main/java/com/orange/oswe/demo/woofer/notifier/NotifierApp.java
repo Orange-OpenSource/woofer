@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jmx.export.MBeanExporter;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -45,8 +46,8 @@ public class NotifierApp {
 	 * Configures the embedded Tomcat server: installs logback access
 	 */
 	@Bean
-	public EmbeddedServletContainerCustomizer containerCustomizer(@Value("${custom.access_log.config}") String accessConfigFile) {
-		return new TomcatCustomizerForLogback(accessConfigFile);
+	public EmbeddedServletContainerCustomizer containerCustomizer(@Value("${spring.application.name}") String applicationName, @Value("${custom.access_log.config}") String accessConfigFile) {
+		return new TomcatCustomizerForLogback(accessConfigFile, Collections.singletonMap("app.name", applicationName));
 	}
 
 	/**

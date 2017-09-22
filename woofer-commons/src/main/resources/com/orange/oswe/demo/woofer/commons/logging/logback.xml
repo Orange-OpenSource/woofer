@@ -2,19 +2,20 @@
 <!-- application logging default configuration: STDOUT -->
 <configuration>
 	<!-- import Logback base config -->
-	<include resource="logback-base.xml" />
+	<include resource="com/orange/oswe/demo/woofer/commons/logging/logback-base.xml" />
+
+<!-- import app name from Spring Boot properties -->
+<springProperty name="app.name" source="spring.application.name"/>
 
 	<!-- define "%sEx" as a conversion rule involving ShortenedThrowableConverter -->
 	<conversionRule conversionWord="sEx" converterClass="net.logstash.logback.stacktrace.ShortenedThrowableConverter" />
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
  		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>%yellow(JAVA&gt;) %boldWhite(%d{HH:mm:ss.SSS}) %highlight(%-5level) [traceId:%X{X-B3-TraceId:--}|parentSpan:%X{X-B3-ParentSpanId}|span:%X{X-B3-SpanId}] %cyan(%logger) - %msg%n%sEx{full,full,full,${STE_EXCLUSIONS}}</Pattern>
+			<Pattern>[${app.name}] %yellow(JAVA&gt;) %boldWhite(%d{HH:mm:ss.SSS}) %highlight(%-5level) [traceId:%X{X-B3-TraceId:--}] %cyan(%logger) - %msg%n%sEx{full,full,full,${STE_EXCLUSIONS}}</Pattern>
 		</layout>
 	</appender>
 	
-	<logger name="com.orange" level="DEBUG" />
-
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>

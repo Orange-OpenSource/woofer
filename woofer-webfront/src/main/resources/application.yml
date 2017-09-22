@@ -8,7 +8,7 @@
 # ----------------------------------------
 spring:
   application:
-    name: woofer-webfront
+    name: webfront
   # INTERNATIONALIZATION
   messages:
     basename: messages/messages
@@ -47,6 +47,10 @@ server:
     # default access log is disabled: use logback instead
     access_log_enabled: false
     basedir: target/tomcat
+    # transfer X-Forwarded-** headers
+    remote-ip-header: x-forwarded-for
+    protocol-header: x-forwarded-proto
+    port-header: x-forwarded-port
 
 # ----------------------------------------
 # EUREKA
@@ -104,6 +108,13 @@ feign:
     enabled: true
 
 # ----------------------------------------
+# LOGGING
+# ----------------------------------------
+logging:
+  # use common logback config
+  config: classpath:com/orange/oswe/demo/woofer/commons/logging/logback.xml
+
+# ----------------------------------------
 # CUSTOM --- Woofer
 # ----------------------------------------
 custom:
@@ -111,7 +122,8 @@ custom:
     key: woofer
     param: rememberMe
   access_log:
-    config: logback-access.xml
+    # use common logback config
+    config: com/orange/oswe/demo/woofer/commons/logging/logback-access.xml
   logging:
     # too bad, exclusion patterns are also defined in logback-base.xml, but I could not make <springProperty> working
     # to load it from Spring env in Logback configuration

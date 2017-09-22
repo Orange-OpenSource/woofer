@@ -15,14 +15,18 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 
 import ch.qos.logback.access.tomcat.LogbackValve;
 
+import java.util.Map;
+
 public class TomcatCustomizerForLogback implements EmbeddedServletContainerCustomizer {
 	
 	private static final Logger logger = LoggerFactory.getLogger(TomcatCustomizerForLogback.class);
 	
 	private final String accessConfigFile;
+	private final Map<String, String> env;
 
-	public TomcatCustomizerForLogback(String accessConfigFile) {
+	public TomcatCustomizerForLogback(String accessConfigFile, Map<String, String> env) {
 		this.accessConfigFile = accessConfigFile;
+		this.env = env;
 	}
 
 	@Override
@@ -30,6 +34,10 @@ public class TomcatCustomizerForLogback implements EmbeddedServletContainerCusto
 		logger.info("Installing logback access config ({})...", accessConfigFile);
 		if (factory instanceof TomcatEmbeddedServletContainerFactory) {
 			TomcatEmbeddedServletContainerFactory containerFactory = (TomcatEmbeddedServletContainerFactory) factory;
+			// transfer env (through Java env)
+			for(Map.Entry<String, String> entry : env.entrySet()) {
+				System.setProperty(entry.getKey(), entry.getValue());
+			}
 			LogbackValve logbackValve = new LogbackValve();
 			logbackValve.setFilename(accessConfigFile);
 			containerFactory.addContextValves(logbackValve);

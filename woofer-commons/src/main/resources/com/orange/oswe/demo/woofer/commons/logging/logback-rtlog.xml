@@ -2,7 +2,10 @@
 <!-- application logging configuration to ship logs directly to RTLog -->
 <configuration>
 	<!-- import Logback base config -->
-	<include resource="logback-base.xml" />
+	<include resource="com/orange/oswe/demo/woofer/commons/logging/logback-base.xml" />
+
+	<!-- import app name from Spring Boot properties -->
+	<springProperty name="app.name" source="spring.application.name"/>
 
 	<!-- see: https://logback.qos.ch/manual/appenders.html#SyslogAppender -->
     <appender name="RTLOG" class="ch.qos.logback.core.net.RTLogAppender">
@@ -12,7 +15,7 @@
         <facility>USER</facility>
 		<basicat>${RTLOG_BASICAT}</basicat>
 		<program>woofer</program>
-		<product>webfront</product>
+		<product>${app.name}</product>
 		<logfile>java</logfile>
 		<!-- enriches the stack trace with unique hash -->
 		<throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
@@ -20,8 +23,6 @@
 			<exclusions>${STE_EXCLUSIONS}</exclusions>
 		</throwableConverter>
     </appender>
-	
-	<logger name="com.orange" level="DEBUG" />
 	
 	<root level="INFO">
 		<appender-ref ref="RTLOG" />

@@ -16,7 +16,7 @@
 					<pattern>
 			        {
 			        	"@project":"${MD_PROJECT:--}",
-			        	"@app":"backend",
+			        	"@app":"${app.name}",
 			        	"@type":"http",
 			        	"X-B3-TraceId":"%header{X-B3-TraceId}",
 					    "req": {
