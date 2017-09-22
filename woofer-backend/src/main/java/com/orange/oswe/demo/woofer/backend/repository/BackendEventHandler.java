@@ -45,7 +45,7 @@ public class BackendEventHandler {
 
 	@HandleBeforeCreate
 	public void beforeCreateWoof(Woof woof) {
-		logger.debug("posting woof from {}: \"{}\"", woof.getAuthor(), new ToStringLimiter(woof.getMessage()));
+		logger.info("posting woof from {}: \"{}\"", woof.getAuthor(), new ToStringLimiter(woof.getMessage()));
 		// simulate slowness
 		unexpectedSlownessSimulator.maybeSlow(woof.getMessage());
 		// simulate errors
@@ -54,7 +54,7 @@ public class BackendEventHandler {
 
 	@HandleAfterCreate
 	public void afterCreateWoof(Woof woof) {
-		logger.debug("posted woof from {}: \"{}\"", woof.getAuthor(), new ToStringLimiter(woof.getMessage()));
+		logger.info("posted woof from {}: \"{}\"", woof.getAuthor(), new ToStringLimiter(woof.getMessage()));
 		// increment counter
 		counterService.increment("meter.woofs.count");
 		// call notification service (async)

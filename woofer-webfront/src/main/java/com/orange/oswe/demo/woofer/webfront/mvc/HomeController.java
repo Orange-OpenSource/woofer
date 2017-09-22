@@ -54,7 +54,7 @@ public class HomeController {
 	@RequestMapping("/")
 	public ModelAndView home(Authentication authentication, HttpServletRequest req, @RequestParam(name="pageNumber", required=false, defaultValue="0") int pageNumber) {
 		if(authentication != null && authentication.isAuthenticated()) {
-			logger.debug("user home page");
+			logger.info("user home page");
 			ModelAndView modelAndView = new ModelAndView("userhome");
 			modelAndView.addObject("authentication", authentication);
 			String meId = authentication.getName();
@@ -67,18 +67,18 @@ public class HomeController {
 
 			// retrieve woofs for me
 			PagedResources<Woof> woofs = woofsClient.findByFollower(meId, pageNumber, 20);
-			logger.debug("woofs: {}", woofs);
+			logger.info("woofs: {}", woofs);
 			modelAndView.addObject("woofs", woofs);
 			return modelAndView;
 		} else {
-			logger.debug("guest home page");
+			logger.info("guest home page");
 			return new ModelAndView("guesthome");
 		}
 	}
 
 	@RequestMapping(value = "/woofs", method = RequestMethod.POST)
 	public String post(WoofForm form, BindingResult formBinding, Authentication authentication) {
-		logger.debug("new woof posted");
+		logger.info("new woof posted");
 		// increment woofs counter
 		counterService.increment("meter.woofs.count");
 		

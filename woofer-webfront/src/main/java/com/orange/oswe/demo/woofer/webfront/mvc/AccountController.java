@@ -7,11 +7,12 @@
  */
 package com.orange.oswe.demo.woofer.webfront.mvc;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
+import com.orange.oswe.demo.woofer.webfront.clients.UsersClient;
+import com.orange.oswe.demo.woofer.webfront.domain.UnexpectedErrorSimulator;
+import com.orange.oswe.demo.woofer.webfront.domain.User;
+import com.orange.oswe.demo.woofer.webfront.domain.UserCredentials;
+import com.orange.oswe.demo.woofer.webfront.repository.AuthorityRepository;
+import com.orange.oswe.demo.woofer.webfront.repository.UserCredentialsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.orange.oswe.demo.woofer.webfront.clients.UsersClient;
-import com.orange.oswe.demo.woofer.webfront.domain.UnexpectedErrorSimulator;
-import com.orange.oswe.demo.woofer.webfront.domain.User;
-import com.orange.oswe.demo.woofer.webfront.domain.UserCredentials;
-import com.orange.oswe.demo.woofer.webfront.repository.AuthorityRepository;
-import com.orange.oswe.demo.woofer.webfront.repository.UserCredentialsRepository;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 /**
  * Controller in charge of login, logout and signup
@@ -66,13 +65,13 @@ public class AccountController {
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
 	public String signup(@Valid CreateUserForm form, BindingResult formBinding, HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		logger.debug("signup {}", form);
+		logger.info("signup {}", form);
 		if (formBinding.hasErrors()) {
-			logger.debug(" ... has errors: {}", formBinding.getAllErrors());
+			logger.info(" ... has errors: {}", formBinding.getAllErrors());
 			return "signup";
 		}
 		if (userRepository.findByUsername(form.getUsername()) != null) {
-			logger.debug(" ... username already in use");
+			logger.info(" ... username already in use");
 			formBinding.addError(new FieldError("createUserForm", "username", "Login already in use"));
 			return "signup";
 		}
@@ -99,7 +98,7 @@ public class AccountController {
 		User user = new User(form.getUsername(), form.getFullname(), form.getEmail());
 		usersClient.save(user);
 		
-		logger.debug(" ... new user created");
+		logger.info(" ... new user created");
 		
 		// automatically signin
 		request.login(form.getUsername(), form.getPassword());

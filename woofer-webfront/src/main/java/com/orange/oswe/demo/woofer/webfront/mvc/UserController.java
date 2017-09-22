@@ -7,8 +7,12 @@
  */
 package com.orange.oswe.demo.woofer.webfront.mvc;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.orange.oswe.demo.woofer.webfront.clients.BusinessClient;
+import com.orange.oswe.demo.woofer.webfront.clients.UsersClient;
+import com.orange.oswe.demo.woofer.webfront.clients.WoofsClient;
+import com.orange.oswe.demo.woofer.webfront.domain.User;
+import com.orange.oswe.demo.woofer.webfront.domain.UserLinkHelper.LinkAction;
+import com.orange.oswe.demo.woofer.webfront.domain.Woof;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +29,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.orange.oswe.demo.woofer.webfront.clients.BusinessClient;
-import com.orange.oswe.demo.woofer.webfront.clients.UsersClient;
-import com.orange.oswe.demo.woofer.webfront.clients.WoofsClient;
-import com.orange.oswe.demo.woofer.webfront.domain.User;
-import com.orange.oswe.demo.woofer.webfront.domain.UserLinkHelper.LinkAction;
-import com.orange.oswe.demo.woofer.webfront.domain.Woof;
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
  @RequestMapping(value = "/users")
@@ -68,7 +67,7 @@ public class UserController {
 
 	@RequestMapping(value = "/{username}", method = RequestMethod.GET)
 	public ModelAndView user(Authentication authentication, @PathVariable("username") String username, @RequestParam(name="pageNumber", required=false, defaultValue="0") int pageNumber) {
-		logger.debug("user {}", username);
+		logger.info("user {}", username);
 		ModelAndView modelAndView = new ModelAndView("user");
 		User user = usersClient.findByIdWithFullInfo(username).getContent();
 		user.setId(username);
@@ -92,7 +91,7 @@ public class UserController {
 	
 	@RequestMapping(value = "/{username}/subscriptions", method = RequestMethod.POST)
 	public String subscriptions(HttpServletRequest request, Authentication authentication, @PathVariable("username") String username, @RequestParam("action") LinkAction action) {
-		logger.debug("subscriptions {}: {}", username, action);
+		logger.info("subscriptions {}: {}", username, action);
 		if(authentication != null && authentication.isAuthenticated()) {
 			if(action == LinkAction.SUBSCRIBE) {
 				businessClient.addFollower(username, authentication.getName());
@@ -102,9 +101,9 @@ public class UserController {
 //				usersClient.removeFollower(username, authentication.getName());
 			}
 		}
-		// redirect to referer page
+		// redirect to referrer page
 		String referrer = request.getHeader("referer");
-		logger.debug(" ... redirect to : {}", referrer);
+		logger.info(" ... redirect to : {}", referrer);
 		return "redirect:"+(referrer == null ? "/" : referrer);
 	}
 

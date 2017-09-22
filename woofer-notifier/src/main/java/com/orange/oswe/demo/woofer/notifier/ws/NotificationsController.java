@@ -38,19 +38,19 @@ public class NotificationsController {
 	@RequestMapping(path = "/users/{userId}/followers/{followerId}", method = RequestMethod.PUT)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void subscribed(@PathVariable("userId") String userId, @PathVariable("followerId") String followerId) {
-		logger.debug("<{}> subscribe to <{}> woofs", followerId, userId);
+		logger.info("<{}> subscribe to <{}> woofs", followerId, userId);
 	}
 
 	@RequestMapping(path = "/users/{userId}/followers/{followerId}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void unsubscribed(@PathVariable("userId") String userId, @PathVariable("followerId") String followerId) {
-		logger.debug("<{}> unsubscribed to <{}> woofs", followerId, userId);
+		logger.info("<{}> unsubscribed to <{}> woofs", followerId, userId);
 	}
 
 	@RequestMapping(path = "/users/{userId}/woofs", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public void woof(@PathVariable("userId") String userId, @RequestBody String message) {
-		logger.debug("woof sent from <{}>: \"{}\"", userId, new ToStringLimiter(message));
+		logger.info("woof sent from <{}>: \"{}\"", userId, new ToStringLimiter(message));
 
 		// simulate slowness
 		unexpectedSlownessSimulator.maybeSlow(message);

@@ -51,7 +51,7 @@ public class BusinessController {
 	@RequestMapping(path = "/users/{userId}/followers", method = RequestMethod.POST, consumes = "text/uri-list")
 	@ResponseStatus(HttpStatus.OK)
 	public void subscribe(@PathVariable("userId") String userId, @RequestBody String followerUris) throws UserNotFound {
-		logger.debug("subscribe <{}> to <{}> woofs", followerUris, userId);
+		logger.info("subscribe <{}> to <{}> woofs", followerUris, userId);
 		User user = userRepository.findOne(userId);
 		if (user == null) {
 			throw new UserNotFound("Followed user [" + userId + "] not found");
@@ -83,7 +83,7 @@ public class BusinessController {
 	@RequestMapping(path = "/users/{userId}/followers/{followerId}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void unsubscribe(@PathVariable("userId") String userId, @PathVariable("followerId") String followerId) throws UserNotFound {
-		logger.debug("unsubscribe <{}> from <{}> woofs", followerId, userId);
+		logger.info("unsubscribe <{}> from <{}> woofs", followerId, userId);
 		User user = userRepository.findOne(userId);
 		if (user == null) {
 			throw new UserNotFound("Followed user [" + userId + "] not found");
@@ -113,7 +113,7 @@ public class BusinessController {
 	@RequestMapping(path = "/users/{userId}/woofs", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public void woof(@PathVariable("userId") String userId, @RequestBody String message) throws UserNotFound {
-		logger.debug("woof from <{}>: \"{}\"", userId, new ToStringLimiter(message));
+		logger.info("woof from <{}>: \"{}\"", userId, new ToStringLimiter(message));
 		User user = userRepository.findOne(userId);
 		if (user == null) {
 			throw new UserNotFound("Woof author [" + userId + "] not found");
