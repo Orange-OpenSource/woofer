@@ -103,6 +103,7 @@
 		<div class="container">
 			<a id="oswe" class="pull-right" href="#"></a>
 			<ul class="list-inline">
+				<li th:utext="#{info.build(${@buildProperties.group}, ${@buildProperties.name}, ${@buildProperties.version}, ${#calendars.format(@buildProperties.time,'dd/MM/yyyy HH:mm')})}">build <span th:utext="${@buildProperties.}"></span></li>
 				<li><a href="https://github.com/Orange-OpenSource/woofer" title="Woofer on GitHub">GitHub</a></li>
 				<li><a href="https://orange-opensource.github.io/woofer" title="Woofer Tutorials (GitHup pages)">Tutorials</a></li>
 			</ul>
