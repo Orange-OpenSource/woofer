@@ -7,24 +7,17 @@
  */
 package com.orange.oswe.demo.woofer.backend.domain;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.rest.core.config.Projection;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * A woof (short message)
  */
-@Entity(name="woof")
+@Entity(name="woofs")
 public class Woof {
 	
 	/**

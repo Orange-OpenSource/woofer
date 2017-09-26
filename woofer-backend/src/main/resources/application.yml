@@ -9,11 +9,13 @@
 spring:
   application:
     name: woofer-backend
+  profiles:
+    active: h2
+  # JPA
   jpa:
     show-sql: false
-  # DATASOURCE
-  datasource:
-    platform: hsqldb
+    hibernate:
+      ddl-auto: validate
   # DATA REST (RepositoryRestProperties)
   data:
     rest:

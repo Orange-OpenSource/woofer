@@ -9,6 +9,8 @@
 spring:
   application:
     name: woofer-webfront
+  profiles:
+    active: h2
   # INTERNATIONALIZATION
   messages:
     basename: messages/messages
@@ -23,9 +25,8 @@ spring:
   # JPA
   jpa:
     show-sql: false
-  # DATASOURCE
-  datasource:
-    platform: hsqldb
+    hibernate:
+      ddl-auto: validate
   # DATA REST (RepositoryRestProperties)
   data:
     rest:
@@ -106,7 +107,6 @@ ribbon:
 feign:
   hystrix:
     enabled: true
-
 # ----------------------------------------
 # LOGGING
 # ----------------------------------------

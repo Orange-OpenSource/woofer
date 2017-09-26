@@ -115,14 +115,18 @@ public class SecurityConfig {
 		protected void configure(HttpSecurity http) throws Exception {
 			//@formatter:off
 			http
+				.csrf()
+					.ignoringAntMatchers("/manage/**")
+					.and()
 				.headers()
 					.frameOptions()
 						.sameOrigin()
 			.and()
-				// all requests are unauthorized (Woofer can be explored are a guest)
 				.authorizeRequests()
+					// only '/manage' request require an ADMIN role
 					.antMatchers("/manage", "/manage/**")
 						.hasRole("ADMIN")
+					// all the rest is unprotected (Woofer can be explored as anonymous)
 					.anyRequest()
 						.permitAll()
 			.and()

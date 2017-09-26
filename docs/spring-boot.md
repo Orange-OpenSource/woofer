@@ -30,16 +30,17 @@ It involves the following components:
 ## Woofer's profiles
 
 By default, when launching Woofer services locally with no profile, it will 
-use a memory database ([hsqldb](http://hsqldb.org/)),
+use a memory database ([h2](http://www.h2database.com/)),
 output Java and Http logs to the console.
 
 But Woofer has several Spring Boot [profiles](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html)
 to adapt to several environments.
 
 | Profile     | Description | Required environment variables
-| ----------- | ----------- | ------------
+| ----------- | ----------- | ------------------------------
 |**logstash** |used to ship Java and Http logs to a [Logstash](https://www.elastic.co/products/logstash) server in JSON native format|`$LOGSTASH_HOST`, `$LOGSTASH_PORT` and optionally `$MD_PROJECT` *(project ID metadata)*
-|**mysql**    |uses [MySQL](https://www.mysql.com/) or [MariaDB](https://mariadb.org/) as persistent database|`$MYSQL_DATASOURCE_URL`, `$MYSQL_USER` and `$MYSQL_PASSWORD`
+|**mysql**    |uses [MySQL](https://www.mysql.com/) or [MariaDB](https://mariadb.org/) as database |`$H2_DATASOURCE_URL` (default `mem`), `$H2_USER` (default `sa`) and `$H2_PASSWORD` (default none)
+|**h2**       |uses [h2](http://www.h2database.com/) as database (mem or file) |`$MYSQL_DATASOURCE_URL` (default on `localhost`), `$MYSQL_USER` (default `root`) and `$MYSQL_PASSWORD` (default none)
 |**zipkin**   |activates distributed tracing with a [Zipkin](http://zipkin.io/) server|`$ZIPKIN_URL` and `$ZIPKIN_SAMPLING` (a ratio)
 |**openshift**|adapts the Woofer configuration to an OpenShift v3 environment (work in progress)|none
 |**jmx**      |exposes Spring Boot Actuator [metrics](http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-metrics.html) through JMX|none

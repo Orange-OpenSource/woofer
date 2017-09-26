@@ -1,12 +1,12 @@
 # ===================================================================
-# Profile for MySql storage
+# Profile for MariaDB storage
 # ===================================================================
 spring:
   # DATASOURCE
   datasource: 
     platform: mysql
-    driver-class-name: com.mysql.jdbc.Driver
-    url: ${MYSQL_DATASOURCE_URL:jdbc:mysql://localhost/frontend?autoReconnect=true}
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${MYSQL_DATASOURCE_URL:jdbc:mysql://localhost/webfront?autoReconnect=true}
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:}
   jpa:
