@@ -162,7 +162,7 @@ implement a microservices architecture.</p>
 <hr />
 <h2 id="woofers-profiles">Woofer's profiles</h2>
 <p>By default, when launching Woofer services locally with no profile, it will 
-use a memory database (<a href="http://hsqldb.org/">hsqldb</a>),
+use a memory database (<a href="http://www.h2database.com/">h2</a>),
 output Java and Http logs to the console.</p>
 <p>But Woofer has several Spring Boot <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html">profiles</a>
 to adapt to several environments.</p>
@@ -182,8 +182,13 @@ to adapt to several environments.</p>
 </tr>
 <tr>
 <td><strong>mysql</strong></td>
-<td>uses <a href="https://www.mysql.com/">MySQL</a> or <a href="https://mariadb.org/">MariaDB</a> as persistent database</td>
-<td><code>$MYSQL_DATASOURCE_URL</code>, <code>$MYSQL_USER</code> and <code>$MYSQL_PASSWORD</code></td>
+<td>uses <a href="https://www.mysql.com/">MySQL</a> or <a href="https://mariadb.org/">MariaDB</a> as database</td>
+<td><code>$H2_DATASOURCE_URL</code> (default <code>mem</code>), <code>$H2_USER</code> (default <code>sa</code>) and <code>$H2_PASSWORD</code> (default none)</td>
+</tr>
+<tr>
+<td><strong>h2</strong></td>
+<td>uses <a href="http://www.h2database.com/">h2</a> as database (mem or file)</td>
+<td><code>$MYSQL_DATASOURCE_URL</code> (default on <code>localhost</code>), <code>$MYSQL_USER</code> (default <code>root</code>) and <code>$MYSQL_PASSWORD</code> (default none)</td>
 </tr>
 <tr>
 <td><strong>zipkin</strong></td>
