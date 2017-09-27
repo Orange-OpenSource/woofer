@@ -9,6 +9,7 @@ package com.orange.oswe.demo.woofer.backend;
 
 import com.orange.oswe.demo.woofer.commons.error.RestErrorDecoder;
 import com.orange.oswe.demo.woofer.commons.error.RestErrorHandler;
+import com.orange.oswe.demo.woofer.commons.filters.SleuthTraceCaptorFilter;
 import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
 import feign.Contract;
 import feign.codec.ErrorDecoder;
@@ -29,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jmx.export.MBeanExporter;
 
+import javax.servlet.Filter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -98,4 +100,10 @@ public class BackendApp {
 	public ErrorDecoder errorDecoder() {
 		return new RestErrorDecoder();
 	}
+
+	@Bean
+	public Filter sleuthTraceCaptorFilter() {
+		return new SleuthTraceCaptorFilter();
+	}
+
 }

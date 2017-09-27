@@ -16,7 +16,7 @@
 			        {
 			        	"@app":"${app.name}",
 			        	"@type":"http",
-			        	"X-B3-TraceId":"%header{X-B3-TraceId}",
+			        	"X-B3-TraceId":"%reqAttribute{X-B3-TraceId}",
 					    "req": {
 					      "host": "%clientHost",
 					      "url": "%requestURL",
@@ -49,7 +49,7 @@
 						"@project":"${MD_PROJECT:--}",
 						"@app":"${app.name}",
 						"@type":"http",
-						"X-B3-TraceId":"%header{X-B3-TraceId}",
+						"X-B3-TraceId":"%reqAttribute{X-B3-TraceId}",
 						"req": {
 							"host": "%clientHost",
 							"url": "%requestURL",

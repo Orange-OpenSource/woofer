@@ -8,6 +8,7 @@
 package com.orange.oswe.demo.woofer.notifier;
 
 import com.orange.oswe.demo.woofer.commons.error.RestErrorHandler;
+import com.orange.oswe.demo.woofer.commons.filters.SleuthTraceCaptorFilter;
 import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
 import net.logstash.logback.stacktrace.StackElementFilter;
 import net.logstash.logback.stacktrace.StackHasher;
@@ -25,6 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jmx.export.MBeanExporter;
 
+import javax.servlet.Filter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -76,5 +78,10 @@ public class NotifierApp {
 	@Bean
 	public RestErrorHandler errorHandler(StackHasher hasher) {
 		return new RestErrorHandler(hasher);
+	}
+
+	@Bean
+	public Filter sleuthTraceCaptorFilter() {
+		return new SleuthTraceCaptorFilter();
 	}
 }
