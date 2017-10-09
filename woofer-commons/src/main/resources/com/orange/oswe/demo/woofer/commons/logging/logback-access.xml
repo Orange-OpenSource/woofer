@@ -5,7 +5,7 @@
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%magenta(HTTP&gt;) %boldWhite(%date{HH:mm:ss.SSS}) [userId:%reqAttribute{track.userId}] "%r" [status: %s, bytes: %b, elapsed: %elapsedTime ms]</pattern>
+			<pattern>%magenta(HTTP&gt;) %boldWhite(%date{HH:mm:ss.SSS}) [traceId:%reqAttribute{X-B3-TraceId}] "%r" [status: %s, bytes: %b, elapsed: %elapsedTime ms]</pattern>
 		</encoder>
 	</appender>
 

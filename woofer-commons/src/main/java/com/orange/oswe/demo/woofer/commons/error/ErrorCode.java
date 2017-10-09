@@ -7,12 +7,12 @@
  */
 package com.orange.oswe.demo.woofer.commons.error;
 
+import org.springframework.http.HttpStatus;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.springframework.http.HttpStatus;
 
 /**
  * Internal error codes
@@ -74,7 +74,12 @@ public enum ErrorCode {
 	 */
 	@Doc("The format of the posted body is not supported by the endpoint.")
 	MediaTypeNotSupported(HttpStatus.UNSUPPORTED_MEDIA_TYPE, 68),
-	
+	/**
+	 * The requested service is currently unavailable (for any technical or maintenance reason). Generally, this is a temporary state.
+	 */
+	@Doc("The requested service is currently unavailable (for any technical or maintenance reason). Generally, this is a temporary state.")
+	ServiceUnavailable(HttpStatus.SERVICE_UNAVAILABLE, 5),
+
 	// ====================================================================================
 	// === codes for Spring
 	// ====================================================================================
@@ -113,7 +118,7 @@ public enum ErrorCode {
 
 
 	// ====================================================================================
-	// === Liveobjects error codes
+	// === others
 	// ====================================================================================
 	/**
 	 * Returned when a requested resource doesn't exist.
