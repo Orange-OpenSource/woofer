@@ -9,6 +9,7 @@ package com.orange.oswe.demo.woofer.webfront;
 
 import com.orange.common.logging.web.PrincipalFilter;
 import com.orange.common.logging.web.SessionIdFilter;
+import com.orange.oswe.demo.woofer.commons.error.RestAndHtmlErrorHandler;
 import com.orange.oswe.demo.woofer.commons.error.RestErrorDecoder;
 import com.orange.oswe.demo.woofer.commons.filters.SleuthTraceCaptorFilter;
 import com.orange.oswe.demo.woofer.commons.tomcat.TomcatCustomizerForLogback;
@@ -115,6 +116,14 @@ public class WebfrontApp {
 	public StackHasher throwableHasher(@Value("${custom.logging.ste_exclusions}") String comaSeparatedPatterns) {
 		List<Pattern> excludes = Arrays.stream(comaSeparatedPatterns.split("\\s*\\,\\s*")).map(Pattern::compile).collect(Collectors.toList());
 		return new StackHasher(StackElementFilter.byPattern(excludes));
+	}
+
+	/**
+	 * Override default Spring Boot error controller with ours
+	 */
+	@Bean
+	public RestAndHtmlErrorHandler errorHandler(StackHasher hasher) {
+		return new RestAndHtmlErrorHandler(hasher);
 	}
 
 	@Bean

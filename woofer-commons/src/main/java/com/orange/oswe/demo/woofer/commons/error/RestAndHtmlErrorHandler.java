@@ -5,10 +5,8 @@
  * license which can be found in the file 'LICENSE.txt' in this package distribution
  * or at 'http://www.apache.org/licenses/LICENSE-2.0'.
  */
-package com.orange.oswe.demo.woofer.webfront.mvc;
+package com.orange.oswe.demo.woofer.commons.error;
 
-import com.orange.oswe.demo.woofer.commons.error.ErrorCode;
-import com.orange.oswe.demo.woofer.commons.error.RestErrorHandler;
 import net.logstash.logback.stacktrace.StackHasher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

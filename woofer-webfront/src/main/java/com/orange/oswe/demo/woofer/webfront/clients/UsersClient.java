@@ -23,7 +23,7 @@ import feign.RequestLine;
 /**
  * JSON/REST client to backend users repository APIs 
  */
-@FeignClient(name="woofer-backend", path="/api/users")
+@FeignClient(name="woofer-backend", path="/backend/api/users")
 public interface UsersClient extends PagingAndSortingClient<User, String> {
 	
 	@RequestLine("GET /{userId}/woofs?sort=datetime,desc")

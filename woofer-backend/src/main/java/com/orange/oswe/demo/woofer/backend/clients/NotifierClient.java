@@ -18,7 +18,7 @@ import feign.RequestLine;
 /**
  * JSON/REST client to notifications APIs 
  */
-@FeignClient(name="woofer-notifier", path="/api/notifications")
+@FeignClient(name="woofer-notifier", path="/notifier/api/notifications")
 public interface NotifierClient {
 	
 	@Async

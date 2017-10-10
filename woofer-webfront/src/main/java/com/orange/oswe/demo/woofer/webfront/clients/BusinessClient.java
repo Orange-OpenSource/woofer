@@ -20,7 +20,7 @@ import feign.RequestLine;
 /**
  * JSON/REST client to backend business APIs 
  */
-@FeignClient(name="woofer-backend", path="/api/business")
+@FeignClient(name="woofer-backend", path="/backend/api/business")
 public interface BusinessClient {
 	
     @RequestLine("POST /users/{userId}/followers")

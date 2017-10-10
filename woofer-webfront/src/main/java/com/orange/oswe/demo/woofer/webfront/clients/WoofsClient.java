@@ -7,23 +7,21 @@
  */
 package com.orange.oswe.demo.woofer.webfront.clients;
 
-import java.util.Date;
-
-import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
-
 import com.orange.oswe.demo.woofer.webfront.domain.Woof;
-
 import feign.Body;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
+
+import java.util.Date;
 
 /**
  * JSON/REST client to backend woofs repository APIs 
  */
-@FeignClient(name = "woofer-backend", path = "/api/woofs")
+@FeignClient(name = "woofer-backend", path = "/backend/api/woofs")
 public interface WoofsClient {
 
 	@RequestLine("GET /search/byAuthor?author={userId}&projection=inlineAuthor&page={pageNumber}&size={pageSize}&sort=datetime,desc")

@@ -26,7 +26,7 @@ import com.orange.oswe.demo.woofer.backend.repository.WoofRepository;
 import com.orange.oswe.demo.woofer.commons.utils.ToStringLimiter;
 
 /**
- * Reimplements part of the APIs that involve buisiness logic (event-based)
+ * Reimplements part of the APIs that involve business logic (event-based)
  */
 @RestController
 @RequestMapping(path = "/api/business")

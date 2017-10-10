@@ -31,6 +31,7 @@ spring:
 # ----------------------------------------
 server:
   port: ${PORT:8081}
+  servlet-path: /backend
   error:
     whitelabel:
       enabled: false
@@ -49,15 +50,15 @@ server:
 # ----------------------------------------
 eureka:
   instance:
-    statusPageUrlPath: ${management.contextPath}/info
-    healthCheckUrlPath: ${management.contextPath}/health
+    statusPageUrlPath: ${server.servlet-path}${management.contextPath}/info
+    healthCheckUrlPath: ${server.servlet-path}${management.contextPath}/health
     leaseRenewalIntervalInSeconds: 10
     metadataMap:
       instanceId: ${vcap.application.instance_id:${spring.application.name}:${spring.application.instance_id:${server.port}}}
   client:
     registryFetchIntervalSeconds: 5
     serviceUrl:
-      defaultZone: ${vcap.services.eureka.credentials.uri:http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/}
+      defaultZone: ${vcap.services.p-service-registry.credentials.uri:http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/}
 
 # ----------------------------------------
 # SECURITY PROPERTIES
