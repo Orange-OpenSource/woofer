@@ -1,0 +1,129 @@
+# ===================================================================
+# COMMON SPRING BOOT PROPERTIES
+# see: https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+# ===================================================================
+
+# ----------------------------------------
+# CORE PROPERTIES
+# ----------------------------------------
+spring:
+  application:
+    name: router
+  # Zipkin
+  zipkin:
+    enabled: false
+
+# ----------------------------------------
+# SERVER PROPERTIES
+# ----------------------------------------
+server:
+  port: ${PORT:8000}
+  error:
+    whitelabel:
+      enabled: false
+  session-timeout: 6000
+  tomcat:
+    # default access log is disabled: use logback instead
+    access_log_enabled: false
+    basedir: target/tomcat
+    # transfer X-Forwarded-** headers
+    remote-ip-header: x-forwarded-for
+    protocol-header: x-forwarded-proto
+    port-header: x-forwarded-port
+
+# ----------------------------------------
+# EUREKA
+# ----------------------------------------
+eureka:
+  instance:
+    statusPageUrlPath: ${management.contextPath}/info
+    healthCheckUrlPath: ${management.contextPath}/health
+    leaseRenewalIntervalInSeconds: 10
+    metadataMap:
+      instanceId: ${vcap.application.instance_id:${spring.application.name}:${spring.application.instance_id:${server.port}}}
+  client:
+    registryFetchIntervalSeconds: 5
+    serviceUrl:
+      defaultZone: ${vcap.services.p-service-registry.credentials.uri:http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/}
+
+# ----------------------------------------
+# SECURITY PROPERTIES
+# ----------------------------------------
+#security.user.name=user # login username
+#security.user.password=changeme
+#security.user.role=USER # role assigned to the user
+security:
+  require-ssl: true
+  enable-csrf: true
+  basic.enabled: false
+
+# ----------------------------------------
+# ACTUATOR PROPERTIES
+# ----------------------------------------
+management:
+  security:
+    enabled: false
+    role: ADMIN
+  contextPath: /manage
+
+# ----------------------------------------
+# Hystrix, Ribbon & Feign timeout
+# ----------------------------------------
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 6000
+ribbon:
+  ConnectTimeout: 6000
+  ReadTimeout: 6000
+
+feign:
+  hystrix:
+    enabled: true
+
+# ----------------------------------------
+# LOGGING
+# ----------------------------------------
+logging:
+  # use common logback config
+  config: classpath:com/orange/oswe/demo/woofer/commons/logging/logback.xml
+
+# ----------------------------------------
+# ZUUL
+# ----------------------------------------
+zuul:
+  add-host-header: true
+  sensitiveHeaders:
+  ignoredPatterns: /manage/**
+  routes:
+    notifier:
+      path: /notifier/**
+      serviceId: woofer-notifier
+      stripPrefix: false
+    backend:
+      path: /backend/**
+      serviceId: woofer-backend
+      stripPrefix: false
+    webfront:
+      path: /**
+      serviceId: woofer-webfront
+      stripPrefix: false
+
+# ----------------------------------------
+# CUSTOM --- Woofer
+# ----------------------------------------
+custom:
+  access_log:
+    # use common logback config
+    config: com/orange/oswe/demo/woofer/commons/logging/logback-access.xml
+  logging:
+    # too bad, exclusion patterns are also defined in logback-base.xml, but I could not make <springProperty> working
+    # to load it from Spring env in Logback configuration
+    ste_exclusions: \$\$FastClassByCGLIB\$\$,\$\$EnhancerBySpringCGLIB\$\$,^sun\.reflect\..*\.invoke,^com\.sun\.,^sun\.net\.,^net\.sf\.cglib\.proxy\.MethodProxy\.invoke,^org\.springframework\.cglib\.,^org\.springframework\.transaction\.,^org\.springframework\.validation\.,^org\.springframework\.app\.,^org\.springframework\.aop\.,^java\.lang\.reflect\.Method\.invoke,^org\.springframework\.ws\..*\.invoke,^org\.springframework\.ws\.transport\.,^org\.springframework\.ws\.soap\.saaj\.SaajSoapMessage\.,^org\.springframework\.ws\.client\.core\.WebServiceTemplate\.,^org\.springframework\.web\.filter\.,^org\.springframework\.boot\.web\.filter\.,^org\.springframework\.util\.ReflectionUtils\.invokeMethod$,^org\.apache\.tomcat\.,^org\.apache\.catalina\.,^org\.apache\.coyote\.,^java\.util\.concurrent\.ThreadPoolExecutor\.runWorker,^java\.lang\.Thread\.run$,^rx\.
+    principal:
+      hash_algo: none

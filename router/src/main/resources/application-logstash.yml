@@ -1,0 +1,15 @@
+# ===================================================================
+# Profile for shipping logs to Logstash
+# ===================================================================
+logging:
+  # use common logback config
+  config: classpath:com/orange/oswe/demo/woofer/commons/logging/logback-logstash.xml
+
+custom:
+  access_log:
+    # use common logback config
+    config: com/orange/oswe/demo/woofer/commons/logging/logback-access-logstash.xml
+  logging:
+    principal:
+      # hash_algo: hashcode
+      hash_algo: none

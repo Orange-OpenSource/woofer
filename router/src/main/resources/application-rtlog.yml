@@ -1,0 +1,16 @@
+# ===================================================================
+# Profile for shipping logs to RTLog
+# ===================================================================
+logging:
+  # use common logback config
+  config: classpath:com/orange/oswe/demo/woofer/commons/logging/logback-rtlog.xml
+
+custom:
+  access_log:
+    # no easy way to push access logs as RTLog for now :-(
+    # use common logback config
+    config: com/orange/oswe/demo/woofer/commons/logging/logback-access.xml
+  logging:
+    principal:
+      # hash_algo: hashcode
+      hash_algo: none

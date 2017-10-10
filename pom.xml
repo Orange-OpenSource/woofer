@@ -27,6 +27,7 @@
         <module>woofer-notifier</module>
         <module>woofer-backend</module>
         <module>woofer-webfront</module>
+        <module>router</module>
     </modules>
 
     <dependencyManagement>
@@ -35,6 +36,13 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>Dalston.SR3</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.pivotal.spring.cloud</groupId>
+                <artifactId>spring-cloud-services-dependencies</artifactId>
+                <version>1.3.1.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

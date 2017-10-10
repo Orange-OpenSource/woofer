@@ -1,0 +1,15 @@
+# ===================================================================
+# Cloud profile (used in Cloud Foundry env)
+# ===================================================================
+spring:
+  # no active profile
+  profiles:
+    active:
+  # DATASOURCE auto configured and injected
+  jpa:
+    hibernate:
+      naming:
+        strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect

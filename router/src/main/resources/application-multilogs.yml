@@ -1,0 +1,15 @@
+# ===================================================================
+# Profile for shipping logs to multiple logging management systems
+# ===================================================================
+logging:
+  # use common logback config
+  config: classpath:com/orange/oswe/demo/woofer/commons/logging/logback-multi.xml
+
+custom:
+  access_log:
+    # use common logback config
+    config: com/orange/oswe/demo/woofer/commons/logging/logback-access-multi.xml
+  logging:
+    principal:
+      # hash_algo: hashcode
+      hash_algo: none
