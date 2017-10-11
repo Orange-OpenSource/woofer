@@ -1,6 +1,9 @@
 # Incident Analysis with ELK
 
-This chapter explains how errors can be traced and analyzed from the application to Kibana.
+This tutorial shows how incredibly code & libs used in Woofer will help you in your incident analysis using Kibana.
+
+<iframe width="800" height="450" src="https://www.youtube.com/embed/aL57fSimq5I" frameborder="0" allowfullscreen></iframe>
+
 
 ---
 

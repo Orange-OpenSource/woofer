@@ -13,4 +13,8 @@ pages:
     - Logging:
       - Recommendations: recommendations.md
       - Code: logging-code.md
+    - Videos:
+      - Introduction: introduction.md
+      - Discover Logs: discover-logs.md
       - Incident Analysis: incident-analysis.md
+
