@@ -16,7 +16,9 @@ implement a microservices architecture.
 
 It involves the following components:
 
-* `service-registry`: the service registry server, basically implemented by Eureka Server.
+* `service-registry`: the service registry server, basically implemented by [Eureka Server](http://cloud.spring.io/spring-cloud-static/spring-cloud-netflix/1.3.5.RELEASE/single/spring-cloud-netflix.html#spring-cloud-eureka-server).
+* `router`: a router and load balancer service, basically implemented by [Zuul](http://cloud.spring.io/spring-cloud-static/spring-cloud-netflix/1.3.5.RELEASE/single/spring-cloud-netflix.html#_router_and_filter_zuul);
+  only required if you want to load balance the `woofer-webfront` service.
 * `woofer-webfront`: this is the web front-end application, that the end-user will use to connect, read and post woofs.
 * `woofer-backend`: this is the backend service, a pure JSON/Rest API service, that is consumed by the `woofer-webfront` and possibly mobile apps (not part of the demo).
 * `woofer-notifier`: this is a notification service, that is asynchronously triggered when domain events occur (a user posts a woof, or subscribes/unsubscribes to a mate).
