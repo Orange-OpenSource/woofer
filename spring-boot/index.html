@@ -75,6 +75,23 @@
                             <a href="../logging-code/">Code</a>
                         </li>
                     
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Videos <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../introduction/">Introduction</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../discover-logs/">Discover Logs</a>
+                        </li>
+                    
                         <li >
                             <a href="../incident-analysis/">Incident Analysis</a>
                         </li>
@@ -150,7 +167,9 @@ bootstrap to create a microservices application.</p>
 implement a microservices architecture.</p>
 <p>It involves the following components:</p>
 <ul>
-<li><code>service-registry</code>: the service registry server, basically implemented by Eureka Server.</li>
+<li><code>service-registry</code>: the service registry server, basically implemented by <a href="http://cloud.spring.io/spring-cloud-static/spring-cloud-netflix/1.3.5.RELEASE/single/spring-cloud-netflix.html#spring-cloud-eureka-server">Eureka Server</a>.</li>
+<li><code>router</code>: a router and load balancer service, basically implemented by <a href="http://cloud.spring.io/spring-cloud-static/spring-cloud-netflix/1.3.5.RELEASE/single/spring-cloud-netflix.html#_router_and_filter_zuul">Zuul</a>;
+  only required if you want to load balance the <code>woofer-webfront</code> service.</li>
 <li><code>woofer-webfront</code>: this is the web front-end application, that the end-user will use to connect, read and post woofs.</li>
 <li><code>woofer-backend</code>: this is the backend service, a pure JSON/Rest API service, that is consumed by the <code>woofer-webfront</code> and possibly mobile apps (not part of the demo).</li>
 <li><code>woofer-notifier</code>: this is a notification service, that is asynchronously triggered when domain events occur (a user posts a woof, or subscribes/unsubscribes to a mate).

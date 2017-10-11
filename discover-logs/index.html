@@ -4,18 +4,18 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Woofer's project website">
+        
         <meta name="author" content="Pierre Smeyers">
-        <link rel="canonical" href="https://orange-opensource.github.io/Woofer/">
+        <link rel="canonical" href="https://orange-opensource.github.io/Woofer/discover-logs/">
         <link rel="shortcut icon" href="img/favicon.png">
         
 
-	<title>Woofer</title>
+	<title>Discover Logs - Woofer</title>
 
-        <link href="./css/bootstrap-3.0.3.min.css" rel="stylesheet">
-        <link href="./css/font-awesome-4.0.3.css" rel="stylesheet">
-        <link rel="stylesheet" href="./css/highlight.css">
-        <link href="./css/base.css" rel="stylesheet">
+        <link href="../css/bootstrap-3.0.3.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+        <link href="../css/base.css" rel="stylesheet">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -42,7 +42,7 @@
             </button>
 
             <!-- Main title -->
-            <a class="navbar-brand" href=".">Woofer</a>
+            <a class="navbar-brand" href="..">Woofer</a>
         </div>
 
         <!-- Expanded navigation -->
@@ -51,14 +51,14 @@
             <ul class="nav navbar-nav">
             
             
-                <li class="active">
-                    <a href=".">Home</a>
+                <li >
+                    <a href="..">Home</a>
                 </li>
             
             
             
                 <li >
-                    <a href="spring-boot/">Spring Boot</a>
+                    <a href="../spring-boot/">Spring Boot</a>
                 </li>
             
             
@@ -68,11 +68,11 @@
                     <ul class="dropdown-menu">
                     
                         <li >
-                            <a href="recommendations/">Recommendations</a>
+                            <a href="../recommendations/">Recommendations</a>
                         </li>
                     
                         <li >
-                            <a href="logging-code/">Code</a>
+                            <a href="../logging-code/">Code</a>
                         </li>
                     
                     </ul>
@@ -80,20 +80,20 @@
             
             
             
-                <li class="dropdown">
+                <li class="dropdown active">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Videos <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                     
                         <li >
-                            <a href="introduction/">Introduction</a>
+                            <a href="../introduction/">Introduction</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="./">Discover Logs</a>
                         </li>
                     
                         <li >
-                            <a href="discover-logs/">Discover Logs</a>
-                        </li>
-                    
-                        <li >
-                            <a href="incident-analysis/">Incident Analysis</a>
+                            <a href="../incident-analysis/">Incident Analysis</a>
                         </li>
                     
                     </ul>
@@ -104,13 +104,13 @@
 
             <!-- Search, Navigation and Repo links -->
             <ul class="nav navbar-nav navbar-right">
-                <li class="disabled">
-                    <a rel="next" >
+                <li >
+                    <a rel="next" href="../introduction/">
                         <i class="fa fa-arrow-left"></i> Previous
                     </a>
                 </li>
                 <li >
-                    <a rel="prev" href="spring-boot/">
+                    <a rel="prev" href="../incident-analysis/">
                         Next <i class="fa fa-arrow-right"></i>
                     </a>
                 </li>
@@ -133,45 +133,16 @@
             <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
     
-        <li class="main active"><a href="#woofer-logging-in-best-practices">Woofer: logging in (best) practice(s)</a></li>
-        
-            <li><a href="#what-is-woofer">What is Woofer ?</a></li>
-        
-            <li><a href="#run-it-on-your-computer">Run it on your computer</a></li>
-        
-            <li><a href="#license">License</a></li>
-        
-            <li><a href="#try-it">Try it !</a></li>
+        <li class="main active"><a href="#discover-logs-in-kibana">Discover logs in Kibana</a></li>
         
     
     </ul>
 </div></div>
             <div class="col-md-9" role="main">
 
-<h1 id="woofer-logging-in-best-practices">Woofer: logging in (best) practice(s)</h1>
-<p>This projects is a showcase web app that demonstrates both <strong>logging best practices</strong> (based on our 
-<a href="https://github.com/Orange-OpenSource/orange-mathoms-logging">orange-mathoms-logging</a> library), as well as providing a 
-quite advanced <strong>Spring Boot-based microservices project sample</strong>.</p>
-<hr />
-<h2 id="what-is-woofer">What is Woofer ?</h2>
-<p>Woofer is meant to be a basic clone of <a href="https://twitter.com/">Tweeter</a>.</p>
-<p>It allows anyone to create an account, post short messages (aka <strong>woofs</strong>), subscribe and unsubscribe to other
-users woofs...</p>
-<h2 id="run-it-on-your-computer">Run it on your computer</h2>
-<p>You may clone the project from GitHub, then as any Spring Boot application, each Woofer service may be launched on your 
-computer with:</p>
-<pre><code>mvn spring-boot:run
-</code></pre>
-
-<p>You'll then be able to access Woofer's pages on <a href="http://localhost:8080/">your computer</a>...</p>
-<blockquote>
-<p>You may either <a href="http://localhost:8080/signup">create your own account</a>, or use any of the <a href="http://localhost:8080/users">existing accounts</a>
-(each one having the <code>user</code> password).</p>
-</blockquote>
-<h2 id="license">License</h2>
-<p>Woofer's code is under <a href="./LICENSE.txt">Apache-2.0 License</a></p>
-<h2 id="try-it">Try it !</h2>
-<p>Notice that even if your app is not in microservices architecture, the Woofer demo has plenty of great stuff to discover !</p></div>
+<h1 id="discover-logs-in-kibana">Discover logs in Kibana</h1>
+<p>This video shows you how to create discover views in Kibana to explore Java &amp; access logs pushed by Woofer.</p>
+<iframe width="800" height="450" src="https://www.youtube.com/embed/wp6D7C3RwSY" frameborder="0" allowfullscreen></iframe></div>
         </div>
 
     <footer class="col-md-12">
@@ -181,9 +152,9 @@ computer with:</p>
     </footer>
 
 
-        <script src="./js/jquery-1.10.2.min.js"></script>
-        <script src="./js/bootstrap-3.0.3.min.js"></script>
-        <script src="./js/highlight.pack.js"></script>
-        <script src="./js/base.js"></script>
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script src="../js/base.js"></script>
     </body>
 </html>

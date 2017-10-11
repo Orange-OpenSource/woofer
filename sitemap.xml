@@ -4,7 +4,7 @@
     
     <url>
      <loc>https://orange-opensource.github.io/Woofer/</loc>
-     <lastmod>2017-09-26</lastmod>
+     <lastmod>2017-10-11</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -12,7 +12,7 @@
     
     <url>
      <loc>https://orange-opensource.github.io/Woofer/spring-boot/</loc>
-     <lastmod>2017-09-26</lastmod>
+     <lastmod>2017-10-11</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -21,19 +21,35 @@
         
     <url>
      <loc>https://orange-opensource.github.io/Woofer/recommendations/</loc>
-     <lastmod>2017-09-26</lastmod>
+     <lastmod>2017-10-11</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>https://orange-opensource.github.io/Woofer/logging-code/</loc>
-     <lastmod>2017-09-26</lastmod>
+     <lastmod>2017-10-11</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+        
+    <url>
+     <loc>https://orange-opensource.github.io/Woofer/introduction/</loc>
+     <lastmod>2017-10-11</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc>https://orange-opensource.github.io/Woofer/discover-logs/</loc>
+     <lastmod>2017-10-11</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>https://orange-opensource.github.io/Woofer/incident-analysis/</loc>
-     <lastmod>2017-09-26</lastmod>
+     <lastmod>2017-10-11</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
