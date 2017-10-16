@@ -252,13 +252,18 @@
         },
         {
             "location": "/discover-logs/",
-            "text": "Discover logs in Kibana\n\n\nThis video shows you how to create discover views in Kibana to explore Java & access logs pushed by Woofer.",
+            "text": "Discover logs in Kibana\n\n\nThis video shows you how to create discover views in Kibana to explore Java & access logs pushed by Woofer.\n\n\n\n\n\n\n\nPre-requisites: Logstash configuration\n\n\nIn order to be able to send directly logs from Woofer to Logstash in JSON format, you have to setup a Logstash \ntcp\n\ninput\n with \njson\n codec as follows:\n\n\ninput {\n  tcp {\n    port => 4321\n    codec => json\n  }\n}",
             "title": "Discover Logs"
         },
         {
             "location": "/discover-logs/#discover-logs-in-kibana",
             "text": "This video shows you how to create discover views in Kibana to explore Java & access logs pushed by Woofer.",
             "title": "Discover logs in Kibana"
+        },
+        {
+            "location": "/discover-logs/#pre-requisites-logstash-configuration",
+            "text": "In order to be able to send directly logs from Woofer to Logstash in JSON format, you have to setup a Logstash  tcp \ninput  with  json  codec as follows:  input {\n  tcp {\n    port => 4321\n    codec => json\n  }\n}",
+            "title": "Pre-requisites: Logstash configuration"
         },
         {
             "location": "/incident-analysis/",

@@ -135,6 +135,8 @@
     
         <li class="main active"><a href="#discover-logs-in-kibana">Discover logs in Kibana</a></li>
         
+            <li><a href="#pre-requisites-logstash-configuration">Pre-requisites: Logstash configuration</a></li>
+        
     
     </ul>
 </div></div>
@@ -142,7 +144,19 @@
 
 <h1 id="discover-logs-in-kibana">Discover logs in Kibana</h1>
 <p>This video shows you how to create discover views in Kibana to explore Java &amp; access logs pushed by Woofer.</p>
-<iframe width="800" height="450" src="https://www.youtube.com/embed/wp6D7C3RwSY" frameborder="0" allowfullscreen></iframe></div>
+<iframe width="800" height="450" src="https://www.youtube.com/embed/wp6D7C3RwSY" frameborder="0" allowfullscreen></iframe>
+
+<hr />
+<h2 id="pre-requisites-logstash-configuration">Pre-requisites: Logstash configuration</h2>
+<p>In order to be able to send directly logs from Woofer to Logstash in JSON format, you have to setup a Logstash <a href="https://www.elastic.co/guide/en/logstash/current/plugins-inputs-tcp.html"><code>tcp</code>
+input</a> with <code>json</code> codec as follows:</p>
+<pre><code class="yaml">input {
+  tcp {
+    port =&gt; 4321
+    codec =&gt; json
+  }
+}
+</code></pre></div>
         </div>
 
     <footer class="col-md-12">
