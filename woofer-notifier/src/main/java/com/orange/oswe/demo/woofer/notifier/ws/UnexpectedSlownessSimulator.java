@@ -20,28 +20,30 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class UnexpectedSlownessSimulator {
-	private static final Logger LOGGER = LoggerFactory.getLogger(UnexpectedSlownessSimulator.class);
-	private static final Pattern SLOW_PATTERN = Pattern.compile("slow\\:notifier(?:\\:(\\d+)(?:~(\\d+))?)?");
-	private static final Random RANDOM = new Random();
+    private static final Logger LOGGER = LoggerFactory.getLogger(UnexpectedSlownessSimulator.class);
+    private static final Pattern SLOW_PATTERN = Pattern.compile("slow\\:notifier(?:\\:(\\d+)(?:~(\\d+))?)?");
+    private static final Random RANDOM = new Random();
 
-	public void maybeSlow(String content) {
-		Matcher matcher = SLOW_PATTERN.matcher(content);
-		if (matcher.find()) {
-			int pause = 500;
-			if (matcher.group(1) != null) {
-				if (matcher.group(2) != null) {
-					int min = Integer.parseInt(matcher.group(1));
-					int max = Integer.parseInt(matcher.group(2));
-					pause = min + RANDOM.nextInt(max - min);
-				} else {
-					pause = Integer.parseInt(matcher.group(1));
-				}
-			}
-			LOGGER.info("Simulate slow treatment ({}): pause {}ms", matcher.group(), pause);
-			try {
-				Thread.sleep(pause);
-			} catch (InterruptedException e) {
-			}
-		}
-	}
+    public void maybeSlow(String content) {
+        Matcher matcher = SLOW_PATTERN.matcher(content);
+        if (matcher.find()) {
+            int pause = 500;
+            if (matcher.group(1) != null) {
+                if (matcher.group(2) != null) {
+                    int min = Integer.parseInt(matcher.group(1));
+                    int max = Integer.parseInt(matcher.group(2));
+                    pause = min + RANDOM.nextInt(max - min);
+                } else {
+                    pause = Integer.parseInt(matcher.group(1));
+                }
+            }
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Simulate slow treatment ({}): pause {}ms", matcher.group(), pause);
+            }
+            try {
+                Thread.sleep(pause);
+            } catch (InterruptedException e) { // NOSONAR
+            }
+        }
+    }
 }

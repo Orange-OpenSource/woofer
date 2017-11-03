@@ -7,6 +7,11 @@
  */
 package com.orange.oswe.demo.woofer.backend.repository;
 
+import com.orange.oswe.demo.woofer.backend.clients.NotifierClient;
+import com.orange.oswe.demo.woofer.backend.domain.UnexpectedErrorSimulator;
+import com.orange.oswe.demo.woofer.backend.domain.UnexpectedSlownessSimulator;
+import com.orange.oswe.demo.woofer.backend.domain.Woof;
+import com.orange.oswe.demo.woofer.commons.utils.ToStringLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +21,6 @@ import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.data.rest.core.event.RepositoryEvent;
 import org.springframework.stereotype.Component;
-
-import com.orange.oswe.demo.woofer.backend.clients.NotifierClient;
-import com.orange.oswe.demo.woofer.backend.domain.UnexpectedErrorSimulator;
-import com.orange.oswe.demo.woofer.backend.domain.UnexpectedSlownessSimulator;
-import com.orange.oswe.demo.woofer.backend.domain.Woof;
-import com.orange.oswe.demo.woofer.commons.utils.ToStringLimiter;
 
 /**
  * Component that intercepts {@link RepositoryEvent} to add behavior
@@ -60,26 +59,5 @@ public class BackendEventHandler {
 		// call notification service (async)
 		notifierClient.posted(woof.getAuthor().getId(), woof.getMessage());
 	}
-	
-	// TODO: cannot get exactly the added/removed follower
-//	@HandleBeforeLinkSave
-//	public void beforeAddFollower(User user, Set<User> followers) {
-//		logger.debug("adding follower to {}\n\tActual: {}\n\tNew: {}", user, user.getFollowers(), followers);
-//	}
-//
-//	@HandleAfterLinkSave
-//	public void afterAddFollower(User user, Set<User> followers) {
-//		logger.debug("added follower to {}\n\tActual: {}\n\tNew: {}", user, user.getFollowers(), followers);
-//	}
-//
-//	@HandleBeforeLinkDelete
-//	public void beforeRemoveFollower(User user, Set<User> followers) {
-//		logger.debug("removing follower from {}\n\tActual: {}\n\tNew: {}", user, user.getFollowers(), followers);
-//	}
-//
-//	@HandleAfterLinkDelete
-//	public void afterRemoveFollower(User user, Set<User> followers) {
-//		logger.debug("removed follower from {}\n\tActual: {}\n\tNew: {}", user, user.getFollowers(), followers);
-//	}
 
 }

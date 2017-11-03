@@ -62,7 +62,7 @@ public class LoggedInUsersService {
     private void updateGauge() {
         int anonymous = countAnonymousConnections();
         gaugeService.submit("sessions.anonymous.count", anonymous);
-        gaugeService.submit("sessions.authenticated.count", countAllConnections() - anonymous);
+        gaugeService.submit("sessions.authenticated.count", (double)countAllConnections() - (double)anonymous);
     }
 
     @EventListener

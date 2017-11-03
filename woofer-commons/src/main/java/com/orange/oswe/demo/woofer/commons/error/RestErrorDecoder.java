@@ -26,7 +26,8 @@ public class RestErrorDecoder implements ErrorDecoder {
                 if (arrayOfErrors != null && arrayOfErrors.length > 0) {
                     errors = Arrays.asList(arrayOfErrors);
                 }
-            } catch (IOException e) {
+            } catch (IOException ioe) {
+                // no op
             }
         }
         return new RestException(HttpStatus.valueOf(response.status()), message, errors);

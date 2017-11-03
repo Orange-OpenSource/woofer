@@ -7,10 +7,8 @@
  */
 package com.orange.oswe.demo.woofer.webfront.repository;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.repository.CrudRepository;
-
 import com.orange.oswe.demo.woofer.webfront.domain.UserCredentials;
+import org.springframework.data.repository.CrudRepository;
 
 /**
  * Repository class for @{UserCredentials} domain objects 
@@ -25,5 +23,5 @@ public interface UserCredentialsRepository extends CrudRepository<UserCredential
 	 * @return a <code>Collection</code> of matching @{UserCredentials} (or an
 	 *		 empty <code>Collection</code> if none found)
 	 */
-	UserCredentials findByUsername(String username) throws DataAccessException;
+	UserCredentials findByUsername(String username);
 }

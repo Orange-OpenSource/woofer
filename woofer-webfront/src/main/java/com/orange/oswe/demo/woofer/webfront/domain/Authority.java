@@ -29,7 +29,7 @@ public class Authority implements GrantedAuthority, Serializable {
 	
 	@Column
 	@NotEmpty
-	private String authority;
+	private String authority; // NOSONAR
 
 	public Authority() {
 	}

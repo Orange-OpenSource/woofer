@@ -95,10 +95,8 @@ public class UserController {
 		if(authentication != null && authentication.isAuthenticated()) {
 			if(action == LinkAction.SUBSCRIBE) {
 				businessClient.addFollower(username, authentication.getName());
-//				usersClient.addFollower(username, authentication.getName());
 			} else {
 				businessClient.removeFollower(username, authentication.getName());
-//				usersClient.removeFollower(username, authentication.getName());
 			}
 		}
 		// redirect to referrer page

@@ -92,7 +92,7 @@ public class UserCredentials implements Serializable, UserDetails {
 			return false;
 		}
 		if (authorities == null) {
-			logger.warn("authorities is null for user " + this);
+			logger.warn("authorities is null for user {}", this);
 		}
 
 		for (Authority authority : authorities) {
@@ -109,8 +109,8 @@ public class UserCredentials implements Serializable, UserDetails {
 			return;
 		}
 		if (authorities == null) {
-			logger.warn("authorities is null for user " + this);
-			authorities = new HashSet<Authority>();
+			logger.warn("authorities is null for user {}", this);
+			authorities = new HashSet<>();
 		}
 
 		authorities.add(authority);

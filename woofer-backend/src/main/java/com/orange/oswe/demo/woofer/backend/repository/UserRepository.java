@@ -7,13 +7,11 @@
  */
 package com.orange.oswe.demo.woofer.backend.repository;
 
-import org.springframework.dao.DataAccessException;
+import com.orange.oswe.demo.woofer.backend.domain.User;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
-
-import com.orange.oswe.demo.woofer.backend.domain.User;
 
 /**
  * Repository class for <code>User</code> domain objects 
@@ -33,5 +31,5 @@ public interface UserRepository extends PagingAndSortingRepository<User, String>
 	 *		 empty <code>Collection</code> if none found)
 	 */
 	@RestResource(path="byEmail", rel="byEmail")
-	User findByEmail(@Param("email") String email) throws DataAccessException;
+	User findByEmail(@Param("email") String email);
 }

@@ -24,7 +24,7 @@ import feign.RequestLine;
  * @param <ID>
  *            the type of the id of the entity the repository manages
  */
-public interface PagingAndSortingClient<T, ID> {
+public interface PagingAndSortingClient<T, ID> { // NOSONAR
 	@RequestLine("POST /")
 	@Headers("Content-Type: application/json")
 	Resource<T> save(T entity);

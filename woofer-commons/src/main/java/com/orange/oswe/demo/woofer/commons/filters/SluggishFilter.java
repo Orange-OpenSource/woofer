@@ -31,9 +31,11 @@ public class SluggishFilter implements Filter {
 	Random random = new Random();
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
+		// no op
 	}
 	@Override
 	public void destroy() {
+		// no op
 	}
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -46,6 +48,7 @@ public class SluggishFilter implements Filter {
 				try {
 					pause = Integer.parseInt(sluggish);
 				} catch(NumberFormatException nfe) {
+					// no op
 				}
 			} else {
 				int min = 0;
@@ -53,16 +56,18 @@ public class SluggishFilter implements Filter {
 				try {
 					min = Integer.parseInt(sluggish.substring(0, idx));
 				} catch(NumberFormatException nfe) {
+					// no op
 				}
 				try {
 					max = Integer.parseInt(sluggish.substring(idx+1));
 				} catch(NumberFormatException nfe) {
+					// no op
 				}
 				pause = min + random.nextInt(max-min);
 			}
 			try {
 				Thread.sleep(pause);
-			} catch (InterruptedException e) {
+			} catch (InterruptedException e) { // NOSONAR
 			}
 		}
 		chain.doFilter(request, response);

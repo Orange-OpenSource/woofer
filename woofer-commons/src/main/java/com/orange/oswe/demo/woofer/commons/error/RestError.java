@@ -9,6 +9,8 @@ package com.orange.oswe.demo.woofer.commons.error;
 
 import com.fasterxml.jackson.annotation.*;
 
+import java.io.Serializable;
+
 /**
  * JSON representation of an error
  * <p>
@@ -16,7 +18,7 @@ import com.fasterxml.jackson.annotation.*;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RestError {
+public class RestError implements Serializable {
 
     private final ErrorCode errorCode;
 

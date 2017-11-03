@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class UnexpectedErrorSimulator {
 	public void maybeThrow(String thing, String content) {
 		if(content.contains("err:notifier")) {
-			throw new RuntimeException("'"+thing+"' caused an unexpected error!");
+			throw new IllegalArgumentException("'"+thing+"' caused an unexpected error!");
 		}
 	}
 }

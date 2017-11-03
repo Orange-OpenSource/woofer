@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 @EnableEurekaClient
 @EnableFeignClients
 public class WebfrontApp {
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(WebfrontApp.class, args);
 	}
 

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @EnableEurekaClient
 public class RouterApp {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         SpringApplication.run(RouterApp.class, args);
     }
 

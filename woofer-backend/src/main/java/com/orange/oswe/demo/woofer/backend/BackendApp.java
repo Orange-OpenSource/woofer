@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @EnableAutoConfiguration
 @EnableFeignClients
 public class BackendApp {
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(BackendApp.class, args);
 	}
 

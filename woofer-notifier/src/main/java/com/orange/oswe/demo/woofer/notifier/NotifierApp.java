@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @EnableEurekaClient
 @EnableAutoConfiguration
 public class NotifierApp {
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		SpringApplication.run(NotifierApp.class, args);
 	}
 

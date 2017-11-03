@@ -24,7 +24,7 @@ public class MiscController {
 
 	@RequestMapping(value = "/err/500", method = RequestMethod.GET)
 	public void throwError1(HttpServletRequest request, HttpServletResponse response) {
-		throw new RuntimeException("ah, too bad... an error !");
+		throw new IllegalArgumentException("ah, too bad... an error !");
 	}
 
 	@RequestMapping(value = "/err/post", method = RequestMethod.POST)

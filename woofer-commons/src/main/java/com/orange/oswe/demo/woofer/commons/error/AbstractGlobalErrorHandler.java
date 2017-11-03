@@ -280,9 +280,6 @@ public abstract class AbstractGlobalErrorHandler implements ErrorController {
         } else if (error instanceof NoHandlerFoundException) {
             // need to rewrite message (too technical)
             return new ErrorDetails(ErrorCode.ServiceNotFound, "No handler found for " + (((NoHandlerFoundException) error).getHttpMethod()) + " " + (((NoHandlerFoundException) error).getRequestURL()), error);
-//        } else if (error instanceof HttpMessageNotWritableException) {
-//        } else if (error instanceof ConversionNotSupportedException) {
-//        } else if (error instanceof MissingPathVariableException) {
         } else {
             /*
              * default case:
@@ -451,7 +448,7 @@ public abstract class AbstractGlobalErrorHandler implements ErrorController {
             case NOT_IMPLEMENTED:
                 return ErrorCode.NotImplemented;
             default:
-                logger.error("Unexpected HTTP error code through Spring annotations: " + status);
+                logger.error("Unexpected HTTP error code through Spring annotations: {}", status);
                 return ErrorCode.InternalError;
         }
     }

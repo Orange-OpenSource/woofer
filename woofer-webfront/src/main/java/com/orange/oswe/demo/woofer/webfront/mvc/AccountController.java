@@ -37,6 +37,7 @@ import javax.validation.Valid;
 public class AccountController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
+	public static final String SIGNUP_VIEW = "signup";
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -58,7 +59,7 @@ public class AccountController {
 
 	@RequestMapping(value = "/signup", method = RequestMethod.GET)
 	public ModelAndView signupView(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView modelView = new ModelAndView("signup");
+		ModelAndView modelView = new ModelAndView(SIGNUP_VIEW);
 		modelView.addObject(new CreateUserForm());
 		return modelView;
 	}
@@ -68,20 +69,13 @@ public class AccountController {
 		logger.info("signup {}", form);
 		if (formBinding.hasErrors()) {
 			logger.info(" ... has errors: {}", formBinding.getAllErrors());
-			return "signup";
+			return SIGNUP_VIEW;
 		}
 		if (userRepository.findByUsername(form.getUsername()) != null) {
 			logger.info(" ... username already in use");
 			formBinding.addError(new FieldError("createUserForm", "username", "Login already in use"));
-			return "signup";
+			return SIGNUP_VIEW;
 		}
-		// verify email is not already used
-//		Resource<User> existing = usersClient.findByEmail(form.getEmail());
-//		if(existing != null) {
-//			logger.debug(" ... email already in use");
-//			formBinding.addError(new FieldError("createUserForm", "email", "Email already in use"));
-//			return "signup";
-//		}
 
 		// simulate errors
 		unexpectedErrorSimulator.maybeThrow("username", form.getUsername());

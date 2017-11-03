@@ -7,10 +7,8 @@
  */
 package com.orange.oswe.demo.woofer.webfront.repository;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.repository.CrudRepository;
-
 import com.orange.oswe.demo.woofer.webfront.domain.Authority;
+import org.springframework.data.repository.CrudRepository;
 
 /**
  * Repository class for <code>Authority</code> domain objects All method names
@@ -29,5 +27,5 @@ public interface AuthorityRepository extends CrudRepository<Authority, Long> {
 	 * @return a <code>Collection</code> of matching <code>Authority</code>s (or an
 	 *		 empty <code>Collection</code> if none found)
 	 */
-	Authority findByAuthority(String authority) throws DataAccessException;
+	Authority findByAuthority(String authority);
 }

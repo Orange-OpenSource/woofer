@@ -7,6 +7,12 @@
  */
 package ch.qos.logback.core.net;
 
+import ch.qos.logback.classic.pattern.ThrowableHandlingConverter;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.util.LevelToSyslogSeverity;
+import ch.qos.logback.core.Layout;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -14,12 +20,6 @@ import java.net.UnknownHostException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-
-import ch.qos.logback.classic.pattern.ThrowableHandlingConverter;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.IThrowableProxy;
-import ch.qos.logback.classic.util.LevelToSyslogSeverity;
-import ch.qos.logback.core.Layout;
 
 /**
  * Specific appender for RTLog (internal Orange log collector)
@@ -188,7 +188,6 @@ public class RTLogAppender extends SyslogAppenderBase<ILoggingEvent> {
                 sb.append('\"');
             }
             sb.append("] ");
-            String prefix = sb.toString();
 
             // level (as a String)
             sb.append(event.getLevel().toString());

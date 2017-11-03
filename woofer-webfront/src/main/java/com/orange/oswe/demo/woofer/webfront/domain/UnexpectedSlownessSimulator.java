@@ -37,10 +37,12 @@ public class UnexpectedSlownessSimulator {
 					pause = Integer.parseInt(matcher.group(1));
 				}
 			}
-			LOGGER.info("Simulate slow treatment ({}): pause {}ms", matcher.group(), pause);
+			if(LOGGER.isInfoEnabled()) {
+				LOGGER.info("Simulate slow treatment ({}): pause {}ms", matcher.group(), pause);
+			}
 			try {
 				Thread.sleep(pause);
-			} catch (InterruptedException e) {
+			} catch (InterruptedException e) { // NOSONAR
 			}
 		}
 	}
