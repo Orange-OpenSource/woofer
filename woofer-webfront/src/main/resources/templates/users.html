@@ -8,6 +8,52 @@
 
 	<div layout:fragment="content" class="container">
 		<h1 th:text="#{users.title}">All users</h1>
+		<!-- Pagination Bar -->
+		<div>
+			<ul class='pagination'>
+				<!-- Prev -->
+				<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(users)}">
+					<a th:href="@{?pageNumber={page}(page=${users.metadata.number-1})}">«</a>
+				</li>
+				<li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(users)}" class="disabled">
+					<span>«</span>
+				</li>
+				<!-- First -->
+				<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(users)}">
+					<a th:href="@{?pageNumber=0}">1</a>
+				</li>
+				<li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isFirst(users)}" class="active">
+					<span>1</span>
+				</li>
+				<!-- ellipsis -->
+				<li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).hasEllipsisBefore(users)}" class="disabled">
+					<span>…</span>
+				</li>
+				<!-- up to 5 pages -->
+				<li th:each="pageNo : ${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).getNearPages(users)}"  th:class="${pageNo == users.metadata.number} ? 'active'">
+					<a th:unless="${pageNo == users.metadata.number}" th:href="@{?pageNumber={page}(page=${pageNo})}" th:text="${pageNo+1}">2</a>
+					<span th:if="${pageNo == users.metadata.number}" th:text="${pageNo+1}">2</span>
+				</li>
+				<!-- ellipsis -->
+				<li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).hasEllipsisAfter(users)}" class="disabled">
+					<span>…</span>
+				</li>
+				<!-- Last -->
+				<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(users)}">
+					<a th:href="@{?pageNumber={page}(page=${users.metadata.totalPages-1})}" th:text="${users.metadata.totalPages}">10</a>
+				</li>
+				<li th:if="${users.metadata.totalPages > 1 and T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(users)}" class="active">
+					<span th:text="${users.metadata.totalPages}">10</span>
+				</li>
+				<!-- Next -->
+				<li th:unless="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(users)}">
+					<a th:href="@{?pageNumber={page}(page=${users.metadata.number+1})}">»</a>
+				</li>
+				<li th:if="${T(com.orange.oswe.demo.woofer.webfront.mvc.Pagination).isLast(users)}" class="disabled">
+					<span>»</span>
+				</li>
+			</ul>
+		</div>
 		<table class="table">
 			<thead>
 				<tr>
@@ -19,7 +65,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="other : ${users}">
+				<tr th:each="other : ${users.content}">
 					<td><a class="user" th:classappend="${@usersService.isConnected(other.id)}? connected" th:href="@{/users/{user}(user=${other.id})}"  th:utext="#{user.link(${other.id}, ${other.fullname})}">user link</a></td>
 					<td th:if="${#httpServletRequest.userPrincipal}" th:switch="${T(com.orange.oswe.demo.woofer.webfront.domain.UserLinkHelper).getLinkAction(me, other).name()}">
 						<form name="form" th:case="SUBSCRIBE" th:action="@{/users/{user}/subscriptions(user=${other.id})}" method="POST">

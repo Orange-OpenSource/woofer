@@ -47,10 +47,10 @@ public class UserController {
 	private BusinessClient businessClient;
 	
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	public ModelAndView allUsers(Authentication authentication, @RequestParam(name="dir", defaultValue="ASC") Direction direction) {
+	public ModelAndView allUsers(Authentication authentication, @RequestParam(name="dir", defaultValue="ASC") Direction direction, @RequestParam(name="pageNumber", required=false, defaultValue="0") int pageNumber) {
 		ModelAndView modelAndView = new ModelAndView("users");
-		Resources<User> users = usersClient.getAll(new Sort(direction, "fullname"));
-		modelAndView.addObject("users", users.getContent());
+		PagedResources<User> users = usersClient.getAll(pageNumber, 20, new Sort(direction, "fullname"));
+		modelAndView.addObject("users", users);
 		modelAndView.addObject("direction", direction);
 		
 		// me

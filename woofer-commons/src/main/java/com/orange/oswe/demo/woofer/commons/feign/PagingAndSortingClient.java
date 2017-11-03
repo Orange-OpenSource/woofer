@@ -9,6 +9,7 @@ package com.orange.oswe.demo.woofer.commons.feign;
 
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.data.domain.Sort;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 
@@ -38,15 +39,15 @@ public interface PagingAndSortingClient<T, ID> { // NOSONAR
 	Resource<T> get(@Param("id") ID id);
 	
     @RequestLine("GET /")
-    Resources<T> getAll();
+	PagedResources<T> getAll();
 
 	@RequestLine("DELETE /{id}")
 	@Headers("Content-Type: application/json")
 	void delete(@Param("id") ID id);
 	
     @RequestLine("GET /?sort={sort}")
-    Resources<T> getAll(@Param(value="sort", expander=SortExpander.class) Sort sort);
+	PagedResources<T> getAll(@Param(value="sort", expander=SortExpander.class) Sort sort);
     
     @RequestLine("GET /?page={pageNumber}&size={pageSize}&sort={sort}")
-    Resources<T> getAll(@Param("pageNumber") int pageNumber, @Param("pageSize") int pageSize, @Param(value="sort", expander=SortExpander.class) Sort sort);
+	PagedResources<T> getAll(@Param("pageNumber") int pageNumber, @Param("pageSize") int pageSize, @Param(value="sort", expander=SortExpander.class) Sort sort);
 }
