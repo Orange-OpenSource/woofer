@@ -7,13 +7,13 @@
  */
 package com.orange.oswe.demo.woofer.webfront.domain;
 
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Fake component that simulates slow treatments

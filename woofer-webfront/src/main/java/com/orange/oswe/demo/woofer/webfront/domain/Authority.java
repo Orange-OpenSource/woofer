@@ -7,16 +7,11 @@
  */
 package com.orange.oswe.demo.woofer.webfront.domain;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.security.core.GrantedAuthority;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity(name="authorities")
 public class Authority implements GrantedAuthority, Serializable {
